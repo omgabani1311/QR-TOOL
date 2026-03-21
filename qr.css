@@ -1,7 +1,7 @@
 body {
 
   font-family: Arial;
-  background-image: url("images/bg-upi.png");
+  background-image: url("bg-upi.png");
   background-size: cover;
   display: flex;
   justify-content: center;
