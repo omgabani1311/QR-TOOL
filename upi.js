@@ -304,7 +304,7 @@ function generateQR() {
 
   // Add logo in the center of the QR code
   let logoImg = document.createElement("img");
-  logoImg.src = "https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png";
+  logoImg.src = "images/logo.png";
   logoImg.style.position = "absolute";
   logoImg.style.width = "60px";
   logoImg.style.height = "60px";
