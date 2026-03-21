@@ -1,0 +1,167 @@
+body {
+
+  font-family: Arial;
+  background-image: url("https://res.cloudinary.com/dzgc4sghz/image/upload/v1772539373/ChatGPT_Image_Mar_3_2026_05_32_24_PM_kkdfmv.png");
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+}
+
+.container {
+
+  width: 90%;
+  max-width: 500px;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+
+}
+
+.brand {
+  text-align: center;
+  color: #111827;
+  font-size: small;
+}
+
+.logo {
+  text-align: center;
+  color: #111827;
+  font-size: medium;
+}
+
+input {
+
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+}
+
+.product-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: flex-end;
+}
+
+.product-row label {
+  display: none;
+}
+
+.product-row input {
+  flex: 1 1 0;
+  min-width: 80px;
+  margin-bottom: 0;
+}
+
+.product-row button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 8px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.product-row button:hover {
+  background: #c82333;
+}
+
+.error {
+
+  color: red;
+  font-size: 12px;
+  display: block;
+  margin-bottom: 10px;
+
+}
+
+button {
+
+  width: 100%;
+  padding: 12px;
+  background: #111827;
+  color: white;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+
+}
+
+.result {
+
+  display: none;
+  margin-top: 20px;
+
+}
+
+#card {
+
+  text-align: center;
+  padding: 30px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+
+}
+
+#qrcode {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+
+}
+
+.invoice-table {
+
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+
+}
+
+.invoice-table th,
+.invoice-table td {
+
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+
+}
+
+.header {
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+
+}
+
+.logo {
+
+  width: 100px;
+  height: 50px;
+  object-fit: contain;
+
+}
+
+.company-info {
+
+  text-align: right;
+
+}

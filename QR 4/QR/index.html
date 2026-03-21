@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>UPI QR Invoice Generator</title>
+
+  <link rel="stylesheet" href="upi.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h2>UPI QR Invoice Generator</h2>
+
+    <div id="form-error" class="error" style="display:none;"></div>
+
+
+
+    <!-- Login Page -->
+    <div id="login-page" style="display:none;">
+      <h3 style="margin-top:0;">Login</h3>
+      <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Enter your credentials to access the invoice
+        generator.</p>
+
+      <label>Username</label>
+      <input id="login-username" placeholder="Username">
+      <span class="error" id="login-username-error"></span>
+
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Password">
+      <span class="error" id="login-password-error"></span>
+
+      <button type="button" onclick="login()" style="margin-top: 10px;">Login</button>
+      <div style="margin-top: 15px; text-align: center;">
+        <span style="font-size: 14px; color: #666;">New user ?</span>
+        <a href="#" onclick="showRegistration()"
+          style="font-size: 14px; color: #007bff; text-decoration: none;">Register here</a>
+      </div>
+    </div>
+
+    <!-- Registration Page -->
+    <div id="registration-page" style="display:none;">
+      <h3 style="margin-top:0;">Profile Registration</h3>
+      <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Register your payee details once to auto-fill future
+        invoices.</p>
+
+      <label>Username</label>
+      <input id="reg-username" placeholder="Desired Username" autocomplete="off">
+      <span class="error" id="reg-username-error"></span>
+
+      <label>Password</label>
+      <input type="password" id="reg-password" placeholder="Password" autocomplete="off">
+      <span class="error" id="reg-password-error"></span>
+
+      <label>Payee Name</label>
+      <input id="reg-name" placeholder="Your Name or Company">
+      <span class="error" id="reg-name-error"></span>
+
+      <label>UPI ID</label>
+      <input id="reg-upi" placeholder="e.g., user@bank">
+      <span class="error" id="reg-upi-error"></span>
+
+      <button type="button" onclick="saveProfile()" style="margin-top: 10px;">Register</button>
+      <div style="margin-top: 15px; text-align: center;">
+        <span style="font-size: 14px; color: #666;">Already registered?</span>
+        <a href="#" onclick="showLogin()" style="font-size: 14px; color: #007bff; text-decoration: none;">Login here</a>
+      </div>
+    </div>
+
+    <!-- Main Invoice Form -->
+    <div id="form" style="display:none;">
+
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 15px; gap: 10px;">
+        <button type="button" onclick="editProfile()"
+          style="padding: 6px 14px; font-size: 13px; background: #6c757d; width: auto;">Edit Profile</button>
+        <button type="button" onclick="logout()"
+          style="padding: 6px 14px; font-size: 13px; background: #dc3545; width: auto;"> Logout</button>
+      </div>
+
+      <label>Payee Name</label>
+      <input id="name" readonly
+        style="background-color: #e9ecef; border: 1px solid #ced4da; cursor: not-allowed; color: #6c757d;">
+      <span class="error" id="name-error"></span>
+
+      <label>UPI ID</label>
+      <input id="upi" readonly
+        style="background-color: #e9ecef; border: 1px solid #ced4da; cursor: not-allowed; color: #6c757d;">
+      <span class="error" id="upi-error"></span>
+
+      <label>Client Name</label>
+      <input id="client">
+      <span class="error" id="client-error"></span>
+
+      <label>Client Phone</label>
+      <input id="client-phone" placeholder="e.g., 1234567890">
+      <span class="error" id="client-phone-error"></span>
+
+      <div id="products-section">
+        <div class="product-row">
+          <label>Product</label>
+          <input class="product" placeholder="Product Name">
+          <span class="error product-error"></span>
+          <label>Quantity</label>
+          <input class="qty" placeholder="Qty">
+          <span class="error qty-error"></span>
+          <label>Price</label>
+          <input class="price" placeholder="Price">
+          <span class="error price-error"></span>
+          <button type="button" onclick="removeProductRow(this)">Remove</button>
+        </div>
+      </div>
+      <button type="button" onclick="addProductRow()">Add Product</button>
+      <br><br>
+
+      <button onclick="generateQR()">Generate QR With Invoice</button>
+
+    </div>
+
+    <div class="result" id="result">
+
+      <div id="card">
+
+        <div class="header" style="padding-bottom: 5px; margin-bottom: 15px;">
+          <div class="company-name" style="text-align: left;">
+            <h3 id="rcompany" style="margin: 0; font-size: 18px;">Artoholix Art Studio</h3>
+          </div>
+          <div class="company-contact" style="text-align: right;">
+            <p style="margin: 0; font-size: 14px; font-weight: bold;">Phone: <span id="rphone"
+                style="font-weight: normal;">+91 9016720721</span></p>
+          </div>
+        </div>
+
+        <h3>INVOICE</h3>
+
+        <p>Date : <span id="rdate"></span></p>
+        <p>Invoice No : <span id="rinvoice"></span></p>
+
+        <div id="qrcode"></div>
+
+        <div class="details">
+
+          <p>Pay To : <span id="rname"></span></p>
+          <p>UPI ID : <span id="rupi"></span></p>
+          <p style="display:none;">Client : <span id="rclient"></span></p>
+          <p style="display:none;">Client Phone: <span id="rclient-phone"></span></p>
+          <p>Total Amount : ₹<span id="ramount"></span></p>
+
+        </div>
+
+        <table class="invoice-table">
+
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+
+          <tbody id="invoice-products"></tbody>
+
+        </table>
+
+      </div>
+
+      <div class="actions">
+
+        <button onclick="shareWhatsApp()">Share WhatsApp</button>
+        <button onclick="downloadJPG()">Download JPG</button>
+        <button onclick="downloadPDF()">Download PDF</button>
+
+        <p class="brand">Powered by:<br><span style="display:inline-block;margin-top:12px;">ANANTAM</span></p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="upi.js"></script>
+
+</body>
+
+</html>
