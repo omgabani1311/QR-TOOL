@@ -425,7 +425,7 @@ function generateQR() {
   logoImg.style.height = "60px";
   logoImg.style.backgroundColor = "white";
   logoImg.style.padding = "4px";
-  logoImg.style.borderRadius = "50%";
+  logoImg.style.borderRadius = "4px";
   logoImg.style.objectFit = "contain";
   logoImg.style.boxSizing = "border-box";
   logoImg.crossOrigin = "Anonymous";
