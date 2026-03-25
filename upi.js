@@ -440,31 +440,33 @@ function generateQR() {
 
   document.getElementById("rname").innerText = name;
   document.getElementById("rupi").innerText = upi;
-  
+
   let companyNameElem = document.getElementById("rcompany");
   if (companyNameElem) {
-      companyNameElem.innerText = name;
+    companyNameElem.innerText = name;
   }
   let phoneElem = document.getElementById("rphone");
   let phoneLabelElem = document.getElementById("rphone-label");
-  let storedContact = localStorage.getItem("contact");
+  let storedContact = localStorage.getItem("contact") || "";
+  
   if (phoneElem && storedContact) {
+    if (storedContact.includes("@")) {
+      if (phoneLabelElem) phoneLabelElem.innerText = "Email:";
+      phoneElem.innerText = storedContact;
+    } else {
+      if (phoneLabelElem) phoneLabelElem.innerText = "Phone:";
       phoneElem.innerText = "+91 " + storedContact;
+    }
   }
+
   let bottomPayee = document.getElementById("bottom-payee");
   if (bottomPayee) {
-    if (storedContact.includes("@")) {
-          if (phoneLabelElem) phoneLabelElem.innerText = "Email:";
-          phoneElem.innerText = storedContact;
-      } else {
-          if (phoneLabelElem) phoneLabelElem.innerText = "Phone:";
-      bottomPayee.innerText = name + " (" + upi + ")";
-    }
+    bottomPayee.innerText = name + " (" + upi + ")";
   }
 
   let rclientElem = document.getElementById("rclient");
   if (rclientElem) rclientElem.innerText = client;
-  
+
   let rclientPhoneElem = document.getElementById("rclient-phone");
   if (rclientPhoneElem) rclientPhoneElem.innerText = clientPhone;
   document.getElementById("ramount").innerText = total
