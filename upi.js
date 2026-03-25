@@ -19,8 +19,19 @@ function checkProfile() {
     }
   } else {
     document.getElementById("form").style.display = "block";
+    
+    let savedLogo = localStorage.getItem("companyLogo");
+    let displayLogo = document.getElementById("display-company-logo");
+    if (savedLogo) {
+      displayLogo.src = savedLogo;
+      displayLogo.style.display = "inline-block";
+    } else {
+      displayLogo.style.display = "none";
+    }
+
     document.getElementById("name").value = localStorage.getItem("payeeName");
     document.getElementById("upi").value = localStorage.getItem("upiId");
+    document.getElementById("welcome-message").innerText = "Welcome, " + (localStorage.getItem("fullname") || localStorage.getItem("contact"));
   }
 }
 
@@ -39,22 +50,26 @@ function showLogin() {
 }
 
 function saveProfile() {
-  let username = document.getElementById("reg-username").value.trim();
+  let fullname = document.getElementById("reg-fullname").value.trim();
+  let contact = document.getElementById("reg-contact").value.trim();
   let pass = document.getElementById("reg-password").value.trim();
   let name = document.getElementById("reg-name").value.trim();
   let upi = document.getElementById("reg-upi").value.trim();
+  let logoFile = document.getElementById("reg-logo").files[0];
   let hasError = false;
 
-  document.getElementById("reg-username-error").innerText = "";
+  document.getElementById("reg-fullname-error").innerText = "";
+  document.getElementById("reg-contact-error").innerText = "";
   document.getElementById("reg-password-error").innerText = "";
   document.getElementById("reg-name-error").innerText = "";
   document.getElementById("reg-upi-error").innerText = "";
 
-  if (!username) {
-    document.getElementById("reg-username-error").innerText = "Username is required.";
+  if (!fullname) {
+    document.getElementById("reg-fullname-error").innerText = "Full Name is required.";
     hasError = true;
-  } else if (username.length < 3) {
-    document.getElementById("reg-username-error").innerText = "Username must be at least 3 characters.";
+  }
+  if (!contact) {
+    document.getElementById("reg-contact-error").innerText = "Phone Number is required.";
     hasError = true;
   }
   if (!pass) {
@@ -81,14 +96,30 @@ function saveProfile() {
 
   if (hasError) return;
 
-  localStorage.setItem("username", username);
+  localStorage.setItem("fullname", fullname);
+  localStorage.setItem("contact", contact);
   localStorage.setItem("password", pass);
   localStorage.setItem("payeeName", name);
   localStorage.setItem("upiId", upi);
   localStorage.setItem("isRegistered", "true");
 
-  logToLocalStorage("Registration", username, name, upi);
+  logToLocalStorage("Registration", contact, name, upi);
 
+  if (logoFile) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      localStorage.setItem("companyLogo", e.target.result);
+      finishRegistration();
+    };
+    reader.readAsDataURL(logoFile);
+  } else {
+    // If no logo, clear any previous
+    localStorage.removeItem("companyLogo");
+    finishRegistration();
+  }
+}
+
+function finishRegistration() {
   let isLoggedIn = sessionStorage.getItem("isLoggedIn");
   if (!isLoggedIn) {
     alert("Registration successful! Please login.");
@@ -99,15 +130,15 @@ function saveProfile() {
 }
 
 function login() {
-  let u = document.getElementById("login-username").value.trim();
+  let c = document.getElementById("login-contact").value.trim();
   let p = document.getElementById("login-password").value.trim();
 
-  document.getElementById("login-username-error").innerText = "";
+  document.getElementById("login-contact-error").innerText = "";
   document.getElementById("login-password-error").innerText = "";
 
   let hasError = false;
-  if (!u) {
-    document.getElementById("login-username-error").innerText = "Username is required.";
+  if (!c) {
+    document.getElementById("login-contact-error").innerText = "Phone Number is required.";
     hasError = true;
   }
   if (!p) {
@@ -116,8 +147,8 @@ function login() {
   }
   if (hasError) return;
 
-  if (u !== localStorage.getItem("username")) {
-    document.getElementById("login-username-error").innerText = "Invalid username.";
+  if (c !== localStorage.getItem("contact")) {
+    document.getElementById("login-contact-error").innerText = "Account not found.";
     return;
   }
   if (p !== localStorage.getItem("password")) {
@@ -126,23 +157,22 @@ function login() {
   }
 
   sessionStorage.setItem("isLoggedIn", "true");
-
   let name = localStorage.getItem("payeeName");
   let upi = localStorage.getItem("upiId");
-  logToLocalStorage("Login", u, name, upi);
-
+  logToLocalStorage("Login", c, name, upi);
   checkProfile();
 }
 
 function logout() {
-  document.getElementById("login-username").value = "";
+  document.getElementById("login-contact").value = "";
   document.getElementById("login-password").value = "";
   sessionStorage.removeItem("isLoggedIn");
   checkProfile();
 }
 
 function editProfile() {
-  document.getElementById("reg-username").value = localStorage.getItem("username") || "";
+  document.getElementById("reg-fullname").value = localStorage.getItem("fullname") || "";
+  document.getElementById("reg-contact").value = localStorage.getItem("contact") || "";
   document.getElementById("reg-password").value = localStorage.getItem("password") || "";
   document.getElementById("reg-name").value = localStorage.getItem("payeeName") || "";
   document.getElementById("reg-upi").value = localStorage.getItem("upiId") || "";
@@ -158,13 +188,10 @@ function addProductRow() {
   newRow.innerHTML = `
     <label>Product</label>
     <input class="product" placeholder="Product Name">
-    <span class="error product-error"></span>
     <label>Quantity</label>
     <input class="qty" placeholder="Qty">
-    <span class="error qty-error"></span>
     <label>Price</label>
     <input class="price" placeholder="Price">
-    <span class="error price-error"></span>
     <button type="button" onclick="removeProductRow(this)">Remove</button>
   `;
   productsSection.appendChild(newRow);
@@ -186,10 +213,7 @@ function generateQR() {
   document.getElementById("upi-error").innerText = "";
   document.getElementById("client-error").innerText = "";
   document.getElementById("client-phone-error").innerText = "";
-  // Clear product errors
-  document.querySelectorAll('.product-error').forEach(el => el.innerText = "");
-  document.querySelectorAll('.qty-error').forEach(el => el.innerText = "");
-  document.querySelectorAll('.price-error').forEach(el => el.innerText = "");
+  document.getElementById("products-errors").innerText = "";
 
   let name = document.getElementById("name").value.trim()
   let upi = document.getElementById("upi").value.trim()
@@ -237,31 +261,30 @@ function generateQR() {
   // Collect and validate products
   let products = [];
   let total = 0;
+  let productsErrorStr = "";
   const productRows = document.querySelectorAll('.product-row');
   productRows.forEach((row, index) => {
     const product = row.querySelector('.product').value.trim();
     const qty = row.querySelector('.qty').value.trim();
     const price = row.querySelector('.price').value.trim();
-    const productError = row.querySelector('.product-error');
-    const qtyError = row.querySelector('.qty-error');
-    const priceError = row.querySelector('.price-error');
+    const idx = index + 1;
 
     if (!product) {
-      productError.innerText = "Product is required.";
+      productsErrorStr += `Row ${idx}: Product is required. `;
       hasError = true;
     }
     if (!qty) {
-      qtyError.innerText = "Quantity is required.";
+      productsErrorStr += `Row ${idx}: Quantity is required. `;
       hasError = true;
     } else if (!/^\d+$/.test(qty) || parseInt(qty) <= 0) {
-      qtyError.innerText = "Quantity must be a positive whole number.";
+      productsErrorStr += `Row ${idx}: Quantity must be positive. `;
       hasError = true;
     }
     if (!price) {
-      priceError.innerText = "Price is required.";
+      productsErrorStr += `Row ${idx}: Price is required. `;
       hasError = true;
     } else if (isNaN(price) || parseFloat(price) <= 0) {
-      priceError.innerText = "Price must be a positive number.";
+      productsErrorStr += `Row ${idx}: Price must be positive. `;
       hasError = true;
     }
 
@@ -271,6 +294,13 @@ function generateQR() {
       total += itemTotal;
     }
   });
+
+  if (productsErrorStr) {
+    document.getElementById("products-errors").innerText = productsErrorStr;
+    document.getElementById("products-errors").style.color = "red";
+    document.getElementById("products-errors").style.fontSize = "12px";
+    document.getElementById("products-errors").style.marginBottom = "10px";
+  }
 
   if (hasError) {
     return;
@@ -304,7 +334,8 @@ function generateQR() {
 
   // Add logo in the center of the QR code
   let logoImg = document.createElement("img");
-  logoImg.src = "./logo.png";
+  let savedLogo = localStorage.getItem("companyLogo");
+  
   logoImg.style.position = "absolute";
   logoImg.style.width = "60px";
   logoImg.style.height = "60px";
@@ -312,6 +343,12 @@ function generateQR() {
   logoImg.style.padding = "5px";
   logoImg.style.borderRadius = "8px";
   logoImg.crossOrigin = "Anonymous";
+
+  if (savedLogo) {
+    logoImg.src = savedLogo;
+  } else {
+    logoImg.src = "./logo.png";
+  }
 
   qrContainer.appendChild(logoImg);
 
