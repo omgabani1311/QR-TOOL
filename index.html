@@ -25,7 +25,7 @@
 
 
     <!-- Login Page -->
-    <div id="login-page" style="display:none;">
+    <form id="login-page" style="display:none;" onsubmit="event.preventDefault(); login();">
       <h3 style="margin-top:0;">Login</h3>
       <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Enter your phone number and password to login.</p>
 
@@ -37,17 +37,17 @@
       <input type="password" id="login-password" placeholder="Password">
       <span class="error" id="login-password-error"></span>
 
-      <button type="button" onclick="login()" style="margin-top: 10px;">Login</button>
+      <button type="submit" style="margin-top: 10px;">Login</button>
       
       <div style="margin-top: 15px; text-align: center;">
         <span style="font-size: 14px; color: #666;">New user ?</span>
         <a href="#" onclick="showRegistration()"
           style="font-size: 14px; color: #007bff; text-decoration: none;">Register here</a>
       </div>
-    </div>
+    </form>
 
     <!-- Registration Page -->
-    <div id="registration-page" style="display:none;">
+    <form id="registration-page" style="display:none;" onsubmit="event.preventDefault(); saveProfile();">
       <h3 style="margin-top:0;">Profile Registration</h3>
       <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Register your payee details once to auto-fill future
         invoices.</p>
@@ -56,8 +56,8 @@
       <input id="reg-fullname" placeholder="Your Full Name" autocomplete="off">
       <span class="error" id="reg-fullname-error"></span>
 
-      <label>Email or Phone Number</label>
-      <input id="reg-contact" placeholder="Email or Phone Number" autocomplete="off">
+      <label>Phone Number</label>
+      <input id="reg-contact" placeholder="Phone Number" autocomplete="off">
       <span class="error" id="reg-contact-error"></span>
 
       <div id="reg-fields-section" style="margin-top: 15px;">
@@ -76,14 +76,14 @@
         <label>Company Logo (Optional)</label>
         <input type="file" id="reg-logo" accept="image/png, image/jpeg" style="margin-bottom: 10px;">
 
-        <button type="button" onclick="saveProfile()" style="margin-top: 10px;">Register</button>
+        <button type="submit" style="margin-top: 10px;">Register</button>
       </div>
 
       <div style="margin-top: 15px; text-align: center;">
         <span style="font-size: 14px; color: #666;">Already registered?</span>
         <a href="#" onclick="showLogin()" style="font-size: 14px; color: #007bff; text-decoration: none;">Login here</a>
       </div>
-    </div>
+    </form>
 
     <!-- Main Invoice Form -->
     <div id="form" style="display:none;">
