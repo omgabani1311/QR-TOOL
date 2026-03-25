@@ -30,13 +30,15 @@ background-image: url("bg-office.png");
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
+    width: auto;
+    height: auto;
+    max-width: 80%;
+    max-height: 80%;
     object-fit: contain;
-    opacity: 0.05;
     pointer-events: none;
     z-index: 0;
 }
+
 
 .brand {
     text-align: center;
