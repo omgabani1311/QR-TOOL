@@ -17,7 +17,8 @@
 <body>
 
   <div class="container" style="position: relative; overflow: hidden;">
-    <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png"
+    <img
+      src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774454889/ChatGPT_Image_Mar_25_2026_09_37_07_PM_dsrksy.png"
       crossorigin="anonymous" class="watermark-logo">
 
     <h2>UPI QR Invoice Generator</h2>
@@ -62,8 +63,8 @@
       <input id="reg-fullname" placeholder="Your Full Name" autocomplete="off">
       <span class="error" id="reg-fullname-error"></span>
 
-      <label>Phone Number</label>
-      <input id="reg-contact" placeholder="Phone Number" autocomplete="off">
+      <label>Email or Phone Number</label>
+      <input id="reg-contact" placeholder="Email or Phone Number" autocomplete="off">
       <span class="error" id="reg-contact-error"></span>
 
       <div id="reg-fields-section" style="margin-top: 15px;">
@@ -186,16 +187,10 @@
           crossorigin="anonymous" class="watermark-logo" style="opacity: 0.03;">
 
         <div class="header"
-          style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px;">
+          style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
           <div style="text-align: left;">
-            <p style="margin: 0; font-size: 14px; color: #555; text-transform: uppercase; letter-spacing: 1px;">Digital
-              Invoice</p>
-            <p style="margin: 4px 0 0 0; font-size: 12px; color: #777;">Payee: <span id="rname"
-                style="font-weight: 600; color: #333;"></span></p>
-            <p style="margin: 2px 0 0 0; font-size: 12px; color: #777;">UPI ID: <span id="rupi"
-                style="font-weight: 600; color: #333;"></span></p>
-            <p style="display:none;">Client : <span id="rclient"></span></p>
-            <p style="display:none;">Client Phone: <span id="rclient-phone"></span></p>
+            <p style="margin: 0; font-size: 14px; color: #555; font-weight: bold; text-transform: uppercase;">Invoice
+              Details</p>
           </div>
           <div style="text-align: right;">
             <p style="margin: 0; font-size: 14px; font-weight: bold; color: #333;">Invoice No: <span id="rinvoice"
@@ -205,9 +200,24 @@
           </div>
         </div>
 
+        <div
+          style="background-color: #e7ece5; padding: 12px 15px; border-radius: 4px; border: 1px solid #c7cfc5; display: flex; justify-content: space-between; margin-bottom: 25px;">
+          <div style="display: flex; flex-direction: column;">
+            <p style="margin: 0; font-size: 15px; font-weight: bold; color: #222;" id="rname"></p>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #444;">UPI ID: <span id="rupi"></span></p>
+          </div>
+          <div style="text-align: right; display: flex; flex-direction: column;">
+            <p style="margin: 0; font-size: 13px; color: #444; font-weight: bold;">Provider</p>
+            <p style="display:none;">Client : <span id="rclient"></span></p>
+            <p style="display:none;">Client Phone: <span id="rclient-phone"></span></p>
+          </div>
+        </div>
+
         <div style="text-align: center; margin: 30px 0 20px 0;">
-          <p style="margin: 0; font-size: 18px; font-weight: bold; letter-spacing: 0.5px; color: #222;">SCAN TO PAY</p>
-          <h3 id="rcompany" style="margin: 5px 0; font-size: 22px; color: #000;"></h3>
+          <p
+            style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold; letter-spacing: 1px; color: #122744; background: #e2e8f0; display: inline-block; padding: 4px 12px; border-radius: 20px;">
+            SCAN TO PAY</p>
+          <h3 id="rcompany" style="margin: 0 0 5px 0; font-size: 24px; color: #000; font-weight: 800;"></h3>
           <p style="margin: 0; font-size: 14px; color: #555;">Phone: <span id="rphone"></span></p>
         </div>
 
@@ -220,43 +230,48 @@
             style="height: 25px;">
         </div>
 
-        <div class="details"
-          style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-          <div style="text-align: left; background: #f0f4f0; padding: 10px 15px; border-radius: 6px; width: 45%;">
-            <p style="margin: 0; font-size: 13px; color: #666; text-transform: uppercase;">Payment Sent To</p>
-            <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #111;" id="bottom-payee"></p>
+        <table class="invoice-table"
+          style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #cfd4cf; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
+          <thead style="background-color: #bac7b6;">
+            <tr>
+              <th
+                style="padding: 10px 12px; text-align: left; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
+                Item Description</th>
+              <th
+                style="padding: 10px 12px; text-align: center; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
+                Qty</th>
+              <th
+                style="padding: 10px 12px; text-align: right; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
+                Unit Price (₹)</th>
+              <th
+                style="padding: 10px 12px; text-align: right; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
+                Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="invoice-products" style="background: white;"></tbody>
+        </table>
+
+        <div class="details" style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="width: 48%; border: 1px solid #cfd4cf; border-radius: 4px; overflow: hidden;">
+            <div
+              style="background-color: #122744; color: white; padding: 6px 10px; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+              Payment Sent To</div>
+            <div
+              style="background-color: #f6f8f5; padding: 10px; min-height: 45px; display: flex; align-items: center;">
+              <p style="margin: 0; font-size: 14px; font-weight: bold; color: #111;" id="bottom-payee"></p>
+            </div>
           </div>
-          <div style="text-align: right;">
-            <p style="margin: 0 0 5px 0; font-size: 15px; color: #444;">Total Amount</p>
-            <p style="margin: 0; font-size: 28px; font-weight: bold; color: #28a745;">₹<span id="ramount"></span></p>
-            <p id="radvance-row" style="display:none; margin: 4px 0 0 0; font-size: 14px;">Advance Amount : ₹<span
+
+          <div style="width: 48%; text-align: right; padding-top: 5px;">
+            <p style="margin: 0 0 5px 0; font-size: 14px; color: #444;">Total Amount</p>
+            <p style="margin: 0; font-size: 32px; font-weight: 900; color: #28a745;">₹<span id="ramount"></span></p>
+            <p id="radvance-row" style="display:none; margin: 6px 0 0 0; font-size: 14px;">Advance Amount : ₹<span
                 id="radvance"></span></p>
             <p id="rpending-row"
               style="display:none; margin: 4px 0 0 0; font-size: 15px; font-weight:bold; color:#d9534f;">Pending Amount
               : ₹<span id="rpending"></span></p>
           </div>
         </div>
-
-        <table class="invoice-table"
-          style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
-          <thead style="background-color: #f5f7f5;">
-            <tr>
-              <th
-                style="padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 14px; color: #555;">
-                Item Description</th>
-              <th
-                style="padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; font-size: 14px; color: #555;">
-                Qty</th>
-              <th
-                style="padding: 12px; text-align: right; border-bottom: 1px solid #e0e0e0; font-size: 14px; color: #555;">
-                Unit Price (₹)</th>
-              <th
-                style="padding: 12px; text-align: right; border-bottom: 1px solid #e0e0e0; font-size: 14px; color: #555;">
-                Total (₹)</th>
-            </tr>
-          </thead>
-          <tbody id="invoice-products" style="background: white;"></tbody>
-        </table>
 
       </div>
 
