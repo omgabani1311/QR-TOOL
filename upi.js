@@ -19,7 +19,7 @@ function checkProfile() {
     }
   } else {
     document.getElementById("form").style.display = "block";
-    
+
     let savedLogo = localStorage.getItem("companyLogo");
     let displayLogo = document.getElementById("display-company-logo");
     if (savedLogo) {
@@ -190,17 +190,62 @@ function newEntry() {
 
   const productsSection = document.getElementById("products-section");
   productsSection.innerHTML = `
-    <div class="product-row">
-      <label>Product</label>
-      <input class="product" placeholder="Product Name">
-      <label>Quantity</label>
-      <input class="qty" placeholder="Qty">
-      <label>Price</label>
-      <input class="price" placeholder="Price">
-      <button type="button" onclick="removeProductRow(this)">Remove</button>
-    </div>
-  `;
+      <div class="product-row">
+        <label>Product</label>
+        <input class="product" placeholder="Product Name">
+        <label>Quantity</label>
+        <input class="qty" placeholder="Qty">
+        <label>Price</label>
+        <input class="price" placeholder="Price" oninput="calculatePending()">
+        <button type="button" onclick="removeProductRow(this)">Remove</button>
+      </div>
+    `;
+    
+  document.getElementById("payment-type").value = "clear";
+  document.getElementById("advance-fields").style.display = "none";
+  document.getElementById("advance-amount").value = "";
+  document.getElementById("pending-amount").value = "";
+
+  document.getElementById("back-btn").style.display = "none";
+
   window.scrollTo(0, 0);
+}
+
+function goBack() {
+  document.getElementById("result").style.display = "none";
+  document.getElementById("form").style.display = "block";
+  document.getElementById("back-btn").style.display = "none";
+  window.scrollTo(0, 0);
+}
+
+function toggleAdvance() {
+  let paymentType = document.getElementById("payment-type").value;
+  let advanceFields = document.getElementById("advance-fields");
+  if (paymentType === "advance") {
+    advanceFields.style.display = "block";
+  } else {
+    advanceFields.style.display = "none";
+    document.getElementById("advance-amount").value = "";
+  }
+  calculatePending();
+}
+
+function calculatePending() {
+  let total = 0;
+  document.querySelectorAll('.product-row').forEach(row => {
+    let qty = row.querySelector('.qty').value.trim();
+    let price = row.querySelector('.price').value.trim();
+    if (qty && price && !isNaN(qty) && !isNaN(price)) {
+      total += parseInt(qty) * parseFloat(price);
+    }
+  });
+
+  let paymentType = document.getElementById("payment-type").value;
+  if (paymentType === "advance") {
+    let advance = parseFloat(document.getElementById("advance-amount").value) || 0;
+    let pending = total - advance;
+    document.getElementById("pending-amount").value = pending >= 0 ? pending : 0;
+  }
 }
 
 function addProductRow() {
@@ -208,14 +253,14 @@ function addProductRow() {
   const newRow = document.createElement('div');
   newRow.className = 'product-row';
   newRow.innerHTML = `
-    <label>Product</label>
-    <input class="product" placeholder="Product Name">
-    <label>Quantity</label>
-    <input class="qty" placeholder="Qty">
-    <label>Price</label>
-    <input class="price" placeholder="Price">
-    <button type="button" onclick="removeProductRow(this)">Remove</button>
-  `;
+      <label>Product</label>
+      <input class="product" placeholder="Product Name">
+      <label>Quantity</label>
+      <input class="qty" placeholder="Qty">
+      <label>Price</label>
+      <input class="price" placeholder="Price" oninput="calculatePending()">
+      <button type="button" onclick="removeProductRow(this)">Remove</button>
+    `;
   productsSection.appendChild(newRow);
 }
 
@@ -223,6 +268,7 @@ function removeProductRow(button) {
   const row = button.parentElement;
   if (document.querySelectorAll('.product-row').length > 1) {
     row.remove();
+    calculatePending();
   } else {
     showFormError('At least one product is required.');
   }
@@ -317,6 +363,20 @@ function generateQR() {
     }
   });
 
+  let paymentType = document.getElementById("payment-type").value;
+  let advance = 0;
+  let pending = total;
+  
+  if (!hasError && paymentType === "advance") {
+    advance = parseFloat(document.getElementById("advance-amount").value);
+    if (isNaN(advance) || advance <= 0 || advance > total) {
+      productsErrorStr += `Advance amount must be valid (between 1 and ${total}). `;
+      hasError = true;
+    } else {
+      pending = total - advance;
+    }
+  }
+
   if (productsErrorStr) {
     document.getElementById("products-errors").innerText = productsErrorStr;
     document.getElementById("products-errors").style.color = "red";
@@ -330,6 +390,7 @@ function generateQR() {
 
   document.getElementById("form").style.display = "none";
   document.getElementById("result").style.display = "block";
+  document.getElementById("back-btn").style.display = "inline-block";
 
   let lastInvoice = localStorage.getItem('lastInvoice') || 0;
   let invoiceNumber = parseInt(lastInvoice) + 1;
@@ -338,7 +399,8 @@ function generateQR() {
 
   let date = new Date().toLocaleDateString()
 
-  let upiLink = `upi://pay?pa=${upi}&pn=${name}&am=${total}&cu=INR`
+  let qrAmount = paymentType === "advance" ? advance : total;
+  let upiLink = `upi://pay?pa=${upi}&pn=${name}&am=${qrAmount}&cu=INR`
 
   let qrContainer = document.getElementById("qrcode");
   qrContainer.innerHTML = "";
@@ -357,7 +419,7 @@ function generateQR() {
   // Add logo in the center of the QR code
   let logoImg = document.createElement("img");
   let savedLogo = localStorage.getItem("companyLogo");
-  
+
   logoImg.style.position = "absolute";
   logoImg.style.width = "60px";
   logoImg.style.height = "60px";
@@ -379,6 +441,16 @@ function generateQR() {
   document.getElementById("rclient").innerText = client
   document.getElementById("rclient-phone").innerText = clientPhone
   document.getElementById("ramount").innerText = total
+  
+  if (paymentType === "advance") {
+    document.getElementById("radvance-row").style.display = "block";
+    document.getElementById("rpending-row").style.display = "block";
+    document.getElementById("radvance").innerText = advance;
+    document.getElementById("rpending").innerText = pending;
+  } else {
+    document.getElementById("radvance-row").style.display = "none";
+    document.getElementById("rpending-row").style.display = "none";
+  }
 
   document.getElementById("rinvoice").innerText = invoice
   document.getElementById("rdate").innerText = date
@@ -389,14 +461,14 @@ function generateQR() {
   products.forEach(item => {
     const row = document.createElement('tr');
     row.innerHTML = `
-    <td>${item.product}</td>
-    <td>${item.qty}</td>
-    <td>${item.price}</td>
-    <td>${item.total}</td>
-  `;
+      <td>${item.product}</td>
+      <td>${item.qty}</td>
+      <td>${item.price}</td>
+      <td>${item.total}</td>
+    `;
     tbody.appendChild(row);
   });
-  
+
   window.scrollTo(0, 0);
 
 }
@@ -412,7 +484,15 @@ function shareWhatsApp() {
   let phone = document.getElementById("rphone") ? document.getElementById("rphone").innerText : '';
   let payeeName = document.getElementById("rname").innerText;
 
-  let msg = `Invoice Payment\n\nCompany: ${company}\nPhone: ${phone}\nInvoice: ${invoice}\nDate: ${date}\nClient: ${client}\nClient Phone: ${clientPhone}\nPayee Name: ${payeeName}\nUPI: ${upi}\nAmount: ₹${amount}`;
+  let amountText = `Total Amount: ₹${amount}`;
+  let radvanceRow = document.getElementById("radvance-row");
+  if (radvanceRow && radvanceRow.style.display !== "none") {
+    let advanceAmount = document.getElementById("radvance").innerText;
+    let pendingAmount = document.getElementById("rpending").innerText;
+    amountText += `\nAdvance Paid: ₹${advanceAmount}\nPending Amount: ₹${pendingAmount}`;
+  }
+
+  let msg = `Invoice Payment\n\nCompany: ${company}\nPhone: ${phone}\nInvoice: ${invoice}\nDate: ${date}\nClient: ${client}\nClient Phone: ${clientPhone}\nPayee Name: ${payeeName}\nUPI: ${upi}\n${amountText}`;
 
   let waPhoneStr = clientPhone.length === 10 ? `91${clientPhone}` : clientPhone;
 
