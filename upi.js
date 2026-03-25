@@ -200,7 +200,7 @@ function newEntry() {
         <button type="button" onclick="removeProductRow(this)">Remove</button>
       </div>
     `;
-    
+
   document.getElementById("payment-type").value = "clear";
   document.getElementById("advance-fields").style.display = "none";
   document.getElementById("advance-amount").value = "";
@@ -366,7 +366,7 @@ function generateQR() {
   let paymentType = document.getElementById("payment-type").value;
   let advance = 0;
   let pending = total;
-  
+
   if (!hasError && paymentType === "advance") {
     advance = parseFloat(document.getElementById("advance-amount").value);
     if (isNaN(advance) || advance <= 0 || advance > total) {
@@ -438,12 +438,30 @@ function generateQR() {
 
   qrContainer.appendChild(logoImg);
 
-  document.getElementById("rname").innerText = name
-  document.getElementById("rupi").innerText = upi
-  document.getElementById("rclient").innerText = client
-  document.getElementById("rclient-phone").innerText = clientPhone
-  document.getElementById("ramount").innerText = total
+  document.getElementById("rname").innerText = name;
+  document.getElementById("rupi").innerText = upi;
   
+  let companyNameElem = document.getElementById("rcompany");
+  if (companyNameElem) {
+      companyNameElem.innerText = name;
+  }
+  let phoneElem = document.getElementById("rphone");
+  let storedContact = localStorage.getItem("contact");
+  if (phoneElem && storedContact) {
+      phoneElem.innerText = "+91 " + storedContact;
+  }
+  let bottomPayee = document.getElementById("bottom-payee");
+  if (bottomPayee) {
+      bottomPayee.innerText = name + " (" + upi + ")";
+  }
+
+  let rclientElem = document.getElementById("rclient");
+  if (rclientElem) rclientElem.innerText = client;
+  
+  let rclientPhoneElem = document.getElementById("rclient-phone");
+  if (rclientPhoneElem) rclientPhoneElem.innerText = clientPhone;
+  document.getElementById("ramount").innerText = total
+
   if (paymentType === "advance") {
     document.getElementById("radvance-row").style.display = "block";
     document.getElementById("rpending-row").style.display = "block";
