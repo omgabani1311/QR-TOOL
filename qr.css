@@ -1,8 +1,9 @@
 body {
-
-    font-family: Arial;
-    background-image: url("./bg-upi.png");
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop");
     background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,7 +11,6 @@ body {
     margin: 0;
     padding: 20px 0;
     box-sizing: border-box;
-
 }
 
 .container {
