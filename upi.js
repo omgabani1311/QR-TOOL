@@ -446,13 +446,20 @@ function generateQR() {
       companyNameElem.innerText = name;
   }
   let phoneElem = document.getElementById("rphone");
+  let phoneLabelElem = document.getElementById("rphone-label");
   let storedContact = localStorage.getItem("contact");
   if (phoneElem && storedContact) {
       phoneElem.innerText = "+91 " + storedContact;
   }
   let bottomPayee = document.getElementById("bottom-payee");
   if (bottomPayee) {
+    if (storedContact.includes("@")) {
+          if (phoneLabelElem) phoneLabelElem.innerText = "Email:";
+          phoneElem.innerText = storedContact;
+      } else {
+          if (phoneLabelElem) phoneLabelElem.innerText = "Phone:";
       bottomPayee.innerText = name + " (" + upi + ")";
+    }
   }
 
   let rclientElem = document.getElementById("rclient");
