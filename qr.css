@@ -1,12 +1,15 @@
 body {
 
     font-family: Arial;
-    background-image: url("./bg-qr.png");
+    background-image: url("./bg-upi.png");
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 0;
+    box-sizing: border-box;
 
 }
 
