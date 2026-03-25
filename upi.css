@@ -1,9 +1,10 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background-image: url("./images/bg-office.png");
-  background-size: cover;
-  background-position: center;
+
+  /* FIXED BACKGROUND */
+  background: url("./images/bg-office.png") no-repeat center center/cover;
   background-attachment: fixed;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,16 +12,29 @@ background-image: url("./images/bg-office.png");
   margin: 0;
   padding: 20px 0;
   box-sizing: border-box;
+  position: relative;
+}
+
+/* DARK OVERLAY (Premium Look) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: -1;
 }
 
 .container {
-
   width: 90%;
   max-width: 500px;
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
 
+  /* GLASS EFFECT 🔥 */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .brand {
@@ -36,15 +50,13 @@ background-image: url("./images/bg-office.png");
 }
 
 input {
-
   width: 100%;
   padding: 10px;
   margin-top: 5px;
   margin-bottom: 5px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   box-sizing: border-box;
-
 }
 
 .product-row {
@@ -72,9 +84,8 @@ input {
   background: #dc3545;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 0;
 }
 
 .product-row button:hover {
@@ -82,16 +93,13 @@ input {
 }
 
 .error {
-
   color: red;
   font-size: 12px;
   display: block;
   margin-bottom: 10px;
-
 }
 
 button {
-
   width: 100%;
   padding: 12px;
   background: #111827;
@@ -99,72 +107,57 @@ button {
   border: none;
   margin-top: 10px;
   cursor: pointer;
-
+  border-radius: 25px;
 }
 
 .result {
-
   display: none;
   margin-top: 20px;
-
 }
 
 #card {
-
   text-align: center;
   padding: 30px;
   border: 1px solid #ddd;
   background: #fafafa;
-
+  border-radius: 10px;
 }
 
 #qrcode {
-
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 10px 0;
-
 }
 
 .invoice-table {
-
   width: 100%;
   margin-top: 15px;
   border-collapse: collapse;
-
 }
 
 .invoice-table th,
 .invoice-table td {
-
   border: 1px solid black;
   padding: 8px;
   text-align: center;
-
 }
 
 .header {
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
   border-bottom: 2px solid #ddd;
   padding-bottom: 10px;
-
 }
 
 .logo {
-
   width: 100px;
   height: 50px;
   object-fit: contain;
-
 }
 
 .company-info {
-
   text-align: right;
-
 }
