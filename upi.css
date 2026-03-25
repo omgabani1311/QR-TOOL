@@ -1,8 +1,9 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
-  /* FIXED BACKGROUND */
-  background: url("./images/bg-office.png") no-repeat center center/cover;
+  background-image: url("/bg-office.png"); /* FINAL FIX */
+  background-size: cover;
+  background-position: center;
   background-attachment: fixed;
 
   display: flex;
@@ -11,8 +12,6 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 20px 0;
-  box-sizing: border-box;
-  position: relative;
 }
 
 /* DARK OVERLAY (Premium Look) */
