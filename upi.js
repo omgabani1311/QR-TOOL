@@ -200,6 +200,7 @@ function newEntry() {
       <button type="button" onclick="removeProductRow(this)">Remove</button>
     </div>
   `;
+  window.scrollTo(0, 0);
 }
 
 function addProductRow() {
@@ -395,6 +396,8 @@ function generateQR() {
   `;
     tbody.appendChild(row);
   });
+  
+  window.scrollTo(0, 0);
 
 }
 
