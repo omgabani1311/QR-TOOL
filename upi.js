@@ -181,6 +181,27 @@ function editProfile() {
   document.getElementById("form").style.display = "none";
 }
 
+function newEntry() {
+  document.getElementById("result").style.display = "none";
+  document.getElementById("form").style.display = "block";
+
+  document.getElementById("client").value = "";
+  document.getElementById("client-phone").value = "";
+
+  const productsSection = document.getElementById("products-section");
+  productsSection.innerHTML = `
+    <div class="product-row">
+      <label>Product</label>
+      <input class="product" placeholder="Product Name">
+      <label>Quantity</label>
+      <input class="qty" placeholder="Qty">
+      <label>Price</label>
+      <input class="price" placeholder="Price">
+      <button type="button" onclick="removeProductRow(this)">Remove</button>
+    </div>
+  `;
+}
+
 function addProductRow() {
   const productsSection = document.getElementById('products-section');
   const newRow = document.createElement('div');
