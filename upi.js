@@ -448,7 +448,7 @@ function generateQR() {
   let phoneElem = document.getElementById("rphone");
   let phoneLabelElem = document.getElementById("rphone-label");
   let storedContact = localStorage.getItem("contact") || "";
-  
+
   if (phoneElem && storedContact) {
     if (storedContact.includes("@")) {
       if (phoneLabelElem) phoneLabelElem.innerText = "Email:";
@@ -459,9 +459,13 @@ function generateQR() {
     }
   }
 
-  let bottomPayee = document.getElementById("bottom-payee");
-  if (bottomPayee) {
-    bottomPayee.innerText = name + " (" + upi + ")";
+  let bottomClient = document.getElementById("bottom-client");
+  if (bottomClient) {
+    bottomClient.innerText = client;
+  }
+  let bottomClientPhone = document.getElementById("bottom-client-phone");
+  if (bottomClientPhone) {
+    bottomClientPhone.innerText = "+91 " + clientPhone;
   }
 
   let rclientElem = document.getElementById("rclient");
