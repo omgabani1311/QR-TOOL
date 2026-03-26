@@ -32,6 +32,10 @@ function checkProfile() {
     document.getElementById("name").value = localStorage.getItem("payeeName");
     document.getElementById("upi").value = localStorage.getItem("upiId");
     document.getElementById("welcome-message").innerText = "Welcome, " + (localStorage.getItem("fullname") || localStorage.getItem("contact"));
+
+    let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+    let nextInvoice = parseInt(lastInvoice) + 1;
+    document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
   }
 }
 
@@ -187,6 +191,10 @@ function newEntry() {
 
   document.getElementById("client").value = "";
   document.getElementById("client-phone").value = "";
+  
+  let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+  let nextInvoice = parseInt(lastInvoice) + 1;
+  document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
 
   const productsSection = document.getElementById("products-section");
   productsSection.innerHTML = `
@@ -279,16 +287,24 @@ function generateQR() {
   // Clear all previous errors
   document.getElementById("name-error").innerText = "";
   document.getElementById("upi-error").innerText = "";
+  document.getElementById("invoice-number-error").innerText = "";
   document.getElementById("client-error").innerText = "";
   document.getElementById("client-phone-error").innerText = "";
   document.getElementById("products-errors").innerText = "";
 
   let name = document.getElementById("name").value.trim()
   let upi = document.getElementById("upi").value.trim()
+  let invoiceVal = document.getElementById("invoice-number").value.trim()
   let client = document.getElementById("client").value.trim()
   let clientPhone = document.getElementById("client-phone").value.trim()
 
   let hasError = false;
+
+  // Validate Invoice Number
+  if (!invoiceVal) {
+    document.getElementById("invoice-number-error").innerText = "Invoice Number is required.";
+    hasError = true;
+  }
 
   // Validate Payee Name
   if (!name) {
@@ -392,10 +408,14 @@ function generateQR() {
   document.getElementById("result").style.display = "block";
   document.getElementById("back-btn").style.display = "inline-block";
 
-  let lastInvoice = localStorage.getItem('lastInvoice') || 0;
-  let invoiceNumber = parseInt(lastInvoice) + 1;
-  localStorage.setItem('lastInvoice', invoiceNumber);
-  let invoice = "INV" + invoiceNumber.toString().padStart(4, '0');
+  if (!hasError) {
+    let match = invoiceVal.match(/\d+$/);
+    if (match) {
+      localStorage.setItem('lastInvoice', parseInt(match[0], 10));
+    }
+  }
+
+  let invoice = invoiceVal;
 
   let date = new Date().toLocaleDateString()
 
