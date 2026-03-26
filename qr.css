@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background-image: url("bg-office.png");
+    background-image: url("bg-office.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -186,6 +186,6 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     z-index: -1;
 }
