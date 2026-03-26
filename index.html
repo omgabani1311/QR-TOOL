@@ -35,8 +35,8 @@
       <h3 style="margin-top:0;">Login</h3>
       <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Enter your phone number and password to login.</p>
 
-      <label>Email or Phone Number</label>
-      <input id="login-contact" placeholder="Email or Phone Number">
+      <label>Phone Number</label>
+      <input id="login-contact" placeholder="Phone Number">
       <span class="error" id="login-contact-error"></span>
 
       <label>Password</label>
@@ -131,7 +131,6 @@
         <input id="upi" readonly>
         <span class="error" id="upi-error"></span>
       </div>
-
       <label>Invoice Number</label>
       <input id="invoice-number" placeholder="e.g., INV0001">
       <span class="error" id="invoice-number-error"></span>
@@ -163,8 +162,9 @@
         <label>Payment Type</label>
         <select id="payment-type" onchange="toggleAdvance()"
           style="width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;">
-          <option value="clear">Clear Payment</option>
+          <option value="full">Full Payment</option>
           <option value="advance">Advance Payment</option>
+          <option value="clear">Clear Payment</option>
         </select>
 
         <div id="advance-fields" style="display: none;">
