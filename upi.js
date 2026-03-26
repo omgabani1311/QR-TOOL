@@ -191,7 +191,7 @@ function newEntry() {
 
   document.getElementById("client").value = "";
   document.getElementById("client-phone").value = "";
-  
+
   let lastInvoice = localStorage.getItem('lastInvoice') || 0;
   let nextInvoice = parseInt(lastInvoice) + 1;
   document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
@@ -209,7 +209,7 @@ function newEntry() {
       </div>
     `;
 
-  document.getElementById("payment-type").value = "clear";
+  document.getElementById("payment-type").value = "full";
   document.getElementById("advance-fields").style.display = "none";
   document.getElementById("advance-amount").value = "";
   document.getElementById("pending-amount").value = "";
@@ -229,7 +229,7 @@ function goBack() {
 function toggleAdvance() {
   let paymentType = document.getElementById("payment-type").value;
   let advanceFields = document.getElementById("advance-fields");
-  if (paymentType === "advance") {
+  if (paymentType === "advance" || paymentType === "clear") {
     advanceFields.style.display = "block";
   } else {
     advanceFields.style.display = "none";
@@ -249,7 +249,7 @@ function calculatePending() {
   });
 
   let paymentType = document.getElementById("payment-type").value;
-  if (paymentType === "advance") {
+  if (paymentType === "advance" || paymentType === "clear") {
     let advance = parseFloat(document.getElementById("advance-amount").value) || 0;
     let pending = total - advance;
     document.getElementById("pending-amount").value = pending >= 0 ? pending : 0;
@@ -383,7 +383,7 @@ function generateQR() {
   let advance = 0;
   let pending = total;
 
-  if (!hasError && paymentType === "advance") {
+  if (!hasError && (paymentType === "advance" || paymentType === "clear")) {
     advance = parseFloat(document.getElementById("advance-amount").value);
     if (isNaN(advance) || advance <= 0 || advance > total) {
       productsErrorStr += `Advance amount must be valid (between 1 and ${total}). `;
@@ -419,7 +419,12 @@ function generateQR() {
 
   let date = new Date().toLocaleDateString()
 
-  let qrAmount = paymentType === "advance" ? advance : total;
+  let qrAmount = total;
+  if (paymentType === "advance") {
+    qrAmount = advance;
+  } else if (paymentType === "clear") {
+    qrAmount = pending;
+  }
   let upiLink = `upi://pay?pa=${upi}&pn=${name}&am=${qrAmount}&cu=INR`
 
   let qrContainer = document.getElementById("qrcode");
@@ -495,7 +500,7 @@ function generateQR() {
   if (rclientPhoneElem) rclientPhoneElem.innerText = clientPhone;
   document.getElementById("ramount").innerText = total
 
-  if (paymentType === "advance") {
+  if (paymentType === "advance" || paymentType === "clear") {
     document.getElementById("radvance-row").style.display = "block";
     document.getElementById("rpending-row").style.display = "block";
     document.getElementById("radvance").innerText = advance;
