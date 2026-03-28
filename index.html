@@ -13,6 +13,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/@zxing/library@latest"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
 </head>
 
 <body>
@@ -33,6 +36,14 @@
     <!-- Success Popup -->
     <div id="success-popup" style="display: none; position: fixed; top: 20px; right: 20px; background-color: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #1e7e34;">
       <span id="success-popup-message">Success!</span>
+    </div>
+
+    <!-- Firebase Notification Popup -->
+    <div id="firebase-notification" style="display: none; position: fixed; top: 80px; right: 20px; background-color: #007bff; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #0056b3;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span id="firebase-notification-text" style="font-size: 15px;">New Notification</span>
+      </div>
     </div>
 
     <!-- Login Page -->
