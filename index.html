@@ -30,6 +30,10 @@
     <div id="form-error" class="error" style="display:none;"></div>
 
 
+    <!-- Success Popup -->
+    <div id="success-popup" style="display: none; position: fixed; top: 20px; right: 20px; background-color: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #1e7e34;">
+      <span id="success-popup-message">Success!</span>
+    </div>
 
     <!-- Login Page -->
     <form id="login-page" style="display:none;" onsubmit="event.preventDefault(); login();">
