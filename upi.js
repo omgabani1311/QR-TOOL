@@ -1,5 +1,8 @@
 window.onload = function () {
   checkProfile();
+  if (typeof initFirebase === 'function') {
+    initFirebase();
+  }
 };
 
 function checkProfile() {
@@ -640,6 +643,58 @@ function showSuccessPopup(message) {
     }, 300);
   }, 3000);
 
+}
+
+function initFirebase() {
+  var firebaseConfig = {
+    apiKey: "AIzaSyBT7qT7JFc0X0VVm42-2rhcYi8CiTxSuu0",
+    authDomain: "generate-qr-with-invoice-tool.firebaseapp.com",
+    databaseURL: "https://generate-qr-with-invoice-tool-default-rtdb.firebaseio.com",
+    projectId: "generate-qr-with-invoice-tool",
+    storageBucket: "generate-qr-with-invoice-tool.firebasestorage.app",
+    messagingSenderId: "801926232346",
+    appId: "1:801926232346:web:5566030011959047fe54a3",
+    measurementId: "G-8R2GC56CQJ"
+  };
+  
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  var db = firebase.database();
+  
+  // Listen for new children in the 'notifications' nodes
+  var notifRef = db.ref('notifications');
+  notifRef.limitToLast(1).on('child_added', function(snapshot) {
+    var data = snapshot.val();
+    if (data && data.message) {
+      showFirebaseNotification(data.message);
+    }
+  });
+}
+
+function showFirebaseNotification(message) {
+  var popup = document.getElementById('firebase-notification');
+  if (!popup) return;
+  document.getElementById('firebase-notification-text').innerText = message;
+  popup.style.display = 'block';
+  
+  setTimeout(() => {
+    popup.style.opacity = '1';
+  }, 10);
+
+  if (window.fbNotificationTimeout) {
+    clearTimeout(window.fbNotificationTimeout);
+  }
+  if (window.fbNotificationHideTimeout) {
+    clearTimeout(window.fbNotificationHideTimeout);
+  }
+
+  window.fbNotificationTimeout = setTimeout(() => {
+    popup.style.opacity = '0';
+    window.fbNotificationHideTimeout = setTimeout(() => {
+      popup.style.display = 'none';
+    }, 300);
+  }, 5000); // Hide after 5 seconds
 }
 
 function showFormError(message) {
