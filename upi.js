@@ -171,7 +171,7 @@ function newEntry() {
 
   window.scrollTo(0, 0);
 }
-
+  
 function goBack() {
   document.getElementById("result").style.display = "none";
   document.getElementById("form").style.display = "block";
