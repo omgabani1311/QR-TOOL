@@ -1,193 +1,141 @@
 window.onload = function () {
-  checkProfile();
   if (typeof initFirebase === 'function') {
     initFirebase();
   }
+  setupAuthListener();
 };
 
-function checkProfile() {
-  let isLoggedIn = sessionStorage.getItem("isLoggedIn");
+function setupAuthListener() {
+  firebase.auth().onAuthStateChanged((user) => {
+    checkProfileWithFirestore(user);
+  });
+}
 
+function checkProfileWithFirestore(user) {
   document.getElementById("registration-page").style.display = "none";
   document.getElementById("login-page").style.display = "none";
   document.getElementById("form").style.display = "none";
   document.getElementById("result").style.display = "none";
+  let subsPage = document.getElementById("subscription-page");
+  if (subsPage) subsPage.style.display = "none";
 
-  if (!isLoggedIn) {
-    let isRegistered = localStorage.getItem("isRegistered");
-    if (isRegistered) {
-      document.getElementById("login-page").style.display = "block";
-    } else {
-      document.getElementById("registration-page").style.display = "block";
-    }
-  } else {
-    document.getElementById("form").style.display = "block";
-
-    let savedLogo = localStorage.getItem("companyLogo");
-    let displayLogo = document.getElementById("display-company-logo");
-    if (savedLogo) {
-      displayLogo.src = savedLogo;
-      displayLogo.style.display = "inline-block";
-    } else {
-      displayLogo.style.display = "none";
-    }
-
-    document.getElementById("name").value = localStorage.getItem("payeeName");
-    document.getElementById("upi").value = localStorage.getItem("upiId");
-    document.getElementById("welcome-message").innerText = "Welcome, " + (localStorage.getItem("fullname") || localStorage.getItem("contact"));
-
-    let lastInvoice = localStorage.getItem('lastInvoice') || 0;
-    let nextInvoice = parseInt(lastInvoice) + 1;
-    document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+  if (!user) {
+    document.getElementById("login-page").style.display = "block";
+    return;
   }
+
+  var db = firebase.firestore();
+  db.collection("users").doc(user.uid).get().then((doc) => {
+    if (doc.exists && doc.data().active === true && new Date(doc.data().expiry) > new Date()) {
+        // Subscription is active
+        let payeeName = localStorage.getItem("payeeName");
+        if (!payeeName) {
+          document.getElementById("registration-page").style.display = "block";
+        } else {
+          document.getElementById("form").style.display = "block";
+          
+          let savedLogo = localStorage.getItem("companyLogo");
+          let displayLogo = document.getElementById("display-company-logo");
+          if (savedLogo) {
+            displayLogo.src = savedLogo;
+            displayLogo.style.display = "inline-block";
+          } else {
+            displayLogo.style.display = "none";
+          }
+          document.getElementById("name").value = payeeName;
+          document.getElementById("upi").value = localStorage.getItem("upiId");
+          
+          let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
+          document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
+          
+          let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+          let nextInvoice = parseInt(lastInvoice) + 1;
+          document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+        }
+    } else {
+        if (subsPage) subsPage.style.display = "block";
+    }
+  }).catch(err => {
+    console.error("Error fetching subscription:", err);
+    if (subsPage) subsPage.style.display = "block";
+    showFormError("Could not verify subscription.");
+  });
 }
 
-
-
-function showRegistration() {
-  document.getElementById("login-page").style.display = "none";
-  document.getElementById("registration-page").style.display = "block";
-  document.getElementById("form").style.display = "none";
+function signInWithGoogle() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then((result) => {
+    showSuccessPopup("Logged in successfully!");
+  }).catch((error) => {
+    console.error(error);
+    showFormError(error.message);
+  });
 }
 
-function showLogin() {
-  document.getElementById("login-page").style.display = "block";
-  document.getElementById("registration-page").style.display = "none";
-  document.getElementById("form").style.display = "none";
+function logout() {
+  firebase.auth().signOut().then(() => {
+    showSuccessPopup("Logged out successfully!");
+  });
 }
 
 function saveProfile() {
-  let fullname = document.getElementById("reg-fullname").value.trim();
   let contact = document.getElementById("reg-contact").value.trim();
-  let pass = document.getElementById("reg-password").value.trim();
   let name = document.getElementById("reg-name").value.trim();
   let upi = document.getElementById("reg-upi").value.trim();
   let logoFile = document.getElementById("reg-logo").files[0];
   let hasError = false;
 
-  document.getElementById("reg-fullname-error").innerText = "";
   document.getElementById("reg-contact-error").innerText = "";
-  document.getElementById("reg-password-error").innerText = "";
   document.getElementById("reg-name-error").innerText = "";
   document.getElementById("reg-upi-error").innerText = "";
 
-  if (!fullname) {
-    document.getElementById("reg-fullname-error").innerText = "Full Name is required.";
-    hasError = true;
-  }
   if (!contact) {
-    document.getElementById("reg-contact-error").innerText = "Phone Number is required.";
-    hasError = true;
-  }
-  if (!pass) {
-    document.getElementById("reg-password-error").innerText = "Password is required.";
-    hasError = true;
-  } else if (!/^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$/.test(pass)) {
-    document.getElementById("reg-password-error").innerText = "Password must be at least 6 characters, including letters and numbers.";
+    document.getElementById("reg-contact-error").innerText = "Contact Info is required.";
     hasError = true;
   }
   if (!name) {
     document.getElementById("reg-name-error").innerText = "Payee Name is required.";
     hasError = true;
-  } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-    document.getElementById("reg-name-error").innerText = "Payee Name should contain only letters and spaces.";
-    hasError = true;
   }
   if (!upi) {
     document.getElementById("reg-upi-error").innerText = "UPI ID is required.";
-    hasError = true;
-  } else if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+$/.test(upi)) {
-    document.getElementById("reg-upi-error").innerText = "Please enter a valid UPI ID (e.g., user@bank).";
     hasError = true;
   }
 
   if (hasError) return;
 
-  localStorage.setItem("fullname", fullname);
   localStorage.setItem("contact", contact);
-  localStorage.setItem("password", pass);
   localStorage.setItem("payeeName", name);
   localStorage.setItem("upiId", upi);
   localStorage.setItem("isRegistered", "true");
 
-  logToLocalStorage("Registration", contact, name, upi);
+  logToLocalStorage("Profile Setup", contact, name, upi);
 
   if (logoFile) {
     let reader = new FileReader();
     reader.onload = function (e) {
       localStorage.setItem("companyLogo", e.target.result);
-      finishRegistration();
+      showSuccessPopup("Profile updated successfully!");
+      checkProfileWithFirestore(firebase.auth().currentUser);
     };
     reader.readAsDataURL(logoFile);
   } else {
-    // If no logo, clear any previous
     localStorage.removeItem("companyLogo");
-    finishRegistration();
-  }
-}
-
-function finishRegistration() {
-  let isLoggedIn = sessionStorage.getItem("isLoggedIn");
-  if (!isLoggedIn) {
-    showSuccessPopup("Registration successful! Please login.");
-    showLogin();
-  } else {
     showSuccessPopup("Profile updated successfully!");
-    checkProfile();
+    checkProfileWithFirestore(firebase.auth().currentUser);
   }
-}
-
-function login() {
-  let c = document.getElementById("login-contact").value.trim();
-  let p = document.getElementById("login-password").value.trim();
-
-  document.getElementById("login-contact-error").innerText = "";
-  document.getElementById("login-password-error").innerText = "";
-
-  let hasError = false;
-  if (!c) {
-    document.getElementById("login-contact-error").innerText = "Phone Number is required.";
-    hasError = true;
-  }
-  if (!p) {
-    document.getElementById("login-password-error").innerText = "Password is required.";
-    hasError = true;
-  }
-  if (hasError) return;
-
-  if (c !== localStorage.getItem("contact")) {
-    document.getElementById("login-contact-error").innerText = "Account not found.";
-    return;
-  }
-  if (p !== localStorage.getItem("password")) {
-    document.getElementById("login-password-error").innerText = "Invalid password.";
-    return;
-  }
-
-  sessionStorage.setItem("isLoggedIn", "true");
-  let name = localStorage.getItem("payeeName");
-  let upi = localStorage.getItem("upiId");
-  logToLocalStorage("Login", c, name, upi);
-  showSuccessPopup("Login successful!");
-  checkProfile();
-}
-
-function logout() {
-  document.getElementById("login-contact").value = "";
-  document.getElementById("login-password").value = "";
-  sessionStorage.removeItem("isLoggedIn");
-  checkProfile();
 }
 
 function editProfile() {
-  document.getElementById("reg-fullname").value = localStorage.getItem("fullname") || "";
   document.getElementById("reg-contact").value = localStorage.getItem("contact") || "";
-  document.getElementById("reg-password").value = localStorage.getItem("password") || "";
   document.getElementById("reg-name").value = localStorage.getItem("payeeName") || "";
   document.getElementById("reg-upi").value = localStorage.getItem("upiId") || "";
 
   document.getElementById("registration-page").style.display = "block";
   document.getElementById("form").style.display = "none";
+  document.getElementById("result").style.display = "none";
+  let subsPage = document.getElementById("subscription-page");
+  if (subsPage) subsPage.style.display = "none";
 }
 
 function newEntry() {
@@ -533,7 +481,7 @@ function generateQR() {
   });
 
   window.scrollTo(0, 0);
-showSuccessPopup("Invoice generated successfully!");
+  showSuccessPopup("Invoice generated successfully!");
 }
 
 function shareWhatsApp() {
@@ -596,7 +544,6 @@ function downloadJPG() {
     link.href = canvas.toDataURL()
     link.click()
     showSuccessPopup("JPG downloaded successfully!");
-
   })
 
 }
@@ -613,7 +560,7 @@ function downloadPDF() {
     pdf.setFontSize(12);
     pdf.text("Print Date: " + printDate, 10, 290);
     pdf.save("invoice.pdf");
-  showSuccessPopup("PDF downloaded successfully!");
+    showSuccessPopup("PDF downloaded successfully!");
   });
 
 }
@@ -623,7 +570,7 @@ function showSuccessPopup(message) {
   if (!popup) return;
   document.getElementById('success-popup-message').innerText = message;
   popup.style.display = 'block';
-  
+
   // Small delay to allow display block to apply before changing opacity
   setTimeout(() => {
     popup.style.opacity = '1';
@@ -642,7 +589,6 @@ function showSuccessPopup(message) {
       popup.style.display = 'none';
     }, 300);
   }, 3000);
-
 }
 
 function initFirebase() {
