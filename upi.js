@@ -609,46 +609,9 @@ function purchaseSubscription(plan, amount) {
     return;
   }
   
-  var options = {
-    "key": "rzp_test_YOUR_KEY_HERE", // Replace with your actual Razorpay Key
-    "amount": amount * 100, 
-    "currency": "INR",
-    "name": "Invoice Tool",
-    "description": plan === 'monthly' ? "Monthly Subscription" : "Yearly Subscription",
-    "notes": {
-      "userId": user.uid,
-      "plan": plan
-    },
-    "handler": function (response){
-        // VERY IMPORTANT: Do NOT update Firestore here for a production app.
-        // We let the Backend Webhook perform the confirmation and secure DB write.
-        console.log("Payment successful. Payment ID:", response.razorpay_payment_id);
-        showSuccessPopup("Payment captured! Verifying subscription securely...");
-        // The frontend automatically unlocks within 2-3 seconds 
-        // because onSnapshot is listening to the 'users' document locally.
-    },
-    "prefill": {
-        "name": user.displayName || "User Name",
-        "email": user.email || ""
-    },
-    "theme": {
-        "color": "#007bff"
-    }
-  };
-  
-  if (options.key === "rzp_test_YOUR_KEY_HERE") {
-    let confirmMock = confirm("TEST MODE: No Razorpay Key set. Do you want to simulate a successful payment of ₹" + amount + " to test the automatic unlock feature?");
-    if (confirmMock) {
-      options.handler({ razorpay_payment_id: "pay_mock_" + Math.random().toString(36).substring(7) });
-    }
-    return;
-  }
-
-  var rzp1 = new Razorpay(options);
-  rzp1.on('payment.failed', function (response){
-      showFormError("Payment Failed: " + response.error.description);
-  });
-  rzp1.open();
+  // Placeholder: Await new payment gateway integration
+  console.log(`Ready to trigger new payment gateway for ${plan} (₹${amount})`);
+  showSuccessPopup("Loading payment gateway... Please wait.");
 }
 
 function initFirebase() {
