@@ -126,9 +126,10 @@ function saveProfile() {
 function finishRegistration() {
   let isLoggedIn = sessionStorage.getItem("isLoggedIn");
   if (!isLoggedIn) {
-    alert("Registration successful! Please login.");
+    showSuccessPopup("Registration successful! Please login.");
     showLogin();
   } else {
+    showSuccessPopup("Profile updated successfully!");
     checkProfile();
   }
 }
@@ -164,6 +165,7 @@ function login() {
   let name = localStorage.getItem("payeeName");
   let upi = localStorage.getItem("upiId");
   logToLocalStorage("Login", c, name, upi);
+  showSuccessPopup("Login successful!");
   checkProfile();
 }
 
@@ -528,7 +530,7 @@ function generateQR() {
   });
 
   window.scrollTo(0, 0);
-
+showSuccessPopup("Invoice generated successfully!");
 }
 
 function shareWhatsApp() {
@@ -566,7 +568,9 @@ function shareWhatsApp() {
       };
 
       if (navigator.canShare && navigator.canShare(shareData)) {
-        navigator.share(shareData).catch(err => {
+        navigator.share(shareData).then(() => {
+          showSuccessPopup("Shared successfully!");
+        }).catch(err => {
           console.error("Error sharing:", err);
           // Fallback if user cancels or there is an issue
           window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -574,6 +578,7 @@ function shareWhatsApp() {
       } else {
         // Fallback for browsers that don't support file sharing
         window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
+        showSuccessPopup("Opened WhatsApp to share!");
       }
     }, 'image/jpeg', 0.9);
   });
@@ -587,6 +592,7 @@ function downloadJPG() {
     link.download = "invoice.jpg"
     link.href = canvas.toDataURL()
     link.click()
+    showSuccessPopup("JPG downloaded successfully!");
 
   })
 
@@ -604,7 +610,35 @@ function downloadPDF() {
     pdf.setFontSize(12);
     pdf.text("Print Date: " + printDate, 10, 290);
     pdf.save("invoice.pdf");
+  showSuccessPopup("PDF downloaded successfully!");
   });
+
+}
+
+function showSuccessPopup(message) {
+  var popup = document.getElementById('success-popup');
+  if (!popup) return;
+  document.getElementById('success-popup-message').innerText = message;
+  popup.style.display = 'block';
+  
+  // Small delay to allow display block to apply before changing opacity
+  setTimeout(() => {
+    popup.style.opacity = '1';
+  }, 10);
+
+  if (window.successPopupTimeout) {
+    clearTimeout(window.successPopupTimeout);
+  }
+  if (window.successPopupHideTimeout) {
+    clearTimeout(window.successPopupHideTimeout);
+  }
+
+  window.successPopupTimeout = setTimeout(() => {
+    popup.style.opacity = '0';
+    window.successPopupHideTimeout = setTimeout(() => {
+      popup.style.display = 'none';
+    }, 300);
+  }, 3000);
 
 }
 
