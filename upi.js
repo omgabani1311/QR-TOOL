@@ -25,37 +25,48 @@ function checkProfileWithFirestore(user) {
   }
 
   var db = firebase.firestore();
-  db.collection("users").doc(user.uid).get().then((doc) => {
+  if (window.userProfileUnsubscribe) window.userProfileUnsubscribe();
+
+  window.userProfileUnsubscribe = db.collection("users").doc(user.uid).onSnapshot((doc) => {
     if (doc.exists && doc.data().active === true && new Date(doc.data().expiry) > new Date()) {
-        // Subscription is active
-        let payeeName = localStorage.getItem("payeeName");
-        if (!payeeName) {
-          document.getElementById("registration-page").style.display = "block";
+      // Subscription is active
+      let payeeName = localStorage.getItem("payeeName");
+      if (!payeeName) {
+        document.getElementById("registration-page").style.display = "block";
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("form").style.display = "none";
+        if (subsPage) subsPage.style.display = "none";
+      } else {
+        document.getElementById("registration-page").style.display = "none";
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("form").style.display = "block";
+        if (subsPage) subsPage.style.display = "none";
+
+        let savedLogo = localStorage.getItem("companyLogo");
+        let displayLogo = document.getElementById("display-company-logo");
+        if (savedLogo) {
+          displayLogo.src = savedLogo;
+          displayLogo.style.display = "inline-block";
         } else {
-          document.getElementById("form").style.display = "block";
-          
-          let savedLogo = localStorage.getItem("companyLogo");
-          let displayLogo = document.getElementById("display-company-logo");
-          if (savedLogo) {
-            displayLogo.src = savedLogo;
-            displayLogo.style.display = "inline-block";
-          } else {
-            displayLogo.style.display = "none";
-          }
-          document.getElementById("name").value = payeeName;
-          document.getElementById("upi").value = localStorage.getItem("upiId");
-          
-          let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
-          document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
-          
-          let lastInvoice = localStorage.getItem('lastInvoice') || 0;
-          let nextInvoice = parseInt(lastInvoice) + 1;
-          document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+          displayLogo.style.display = "none";
         }
+        document.getElementById("name").value = payeeName;
+        document.getElementById("upi").value = localStorage.getItem("upiId");
+
+        let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
+        document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
+
+        let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+        let nextInvoice = parseInt(lastInvoice) + 1;
+        document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+      }
     } else {
-        if (subsPage) subsPage.style.display = "block";
+      document.getElementById("registration-page").style.display = "none";
+      document.getElementById("login-page").style.display = "none";
+      document.getElementById("form").style.display = "none";
+      if (subsPage) subsPage.style.display = "block";
     }
-  }).catch(err => {
+  }, err => {
     console.error("Error fetching subscription:", err);
     if (subsPage) subsPage.style.display = "block";
     showFormError("Could not verify subscription.");
@@ -171,7 +182,7 @@ function newEntry() {
 
   window.scrollTo(0, 0);
 }
-  
+
 function goBack() {
   document.getElementById("result").style.display = "none";
   document.getElementById("form").style.display = "block";
@@ -591,6 +602,55 @@ function showSuccessPopup(message) {
   }, 3000);
 }
 
+function purchaseSubscription(plan, amount) {
+  let user = firebase.auth().currentUser;
+  if (!user) {
+    showFormError("You must be logged in to subscribe!");
+    return;
+  }
+  
+  var options = {
+    "key": "rzp_test_YOUR_KEY_HERE", // Replace with your actual Razorpay Key
+    "amount": amount * 100, 
+    "currency": "INR",
+    "name": "Invoice Tool",
+    "description": plan === 'monthly' ? "Monthly Subscription" : "Yearly Subscription",
+    "notes": {
+      "userId": user.uid,
+      "plan": plan
+    },
+    "handler": function (response){
+        // VERY IMPORTANT: Do NOT update Firestore here for a production app.
+        // We let the Backend Webhook perform the confirmation and secure DB write.
+        console.log("Payment successful. Payment ID:", response.razorpay_payment_id);
+        showSuccessPopup("Payment captured! Verifying subscription securely...");
+        // The frontend automatically unlocks within 2-3 seconds 
+        // because onSnapshot is listening to the 'users' document locally.
+    },
+    "prefill": {
+        "name": user.displayName || "User Name",
+        "email": user.email || ""
+    },
+    "theme": {
+        "color": "#007bff"
+    }
+  };
+  
+  if (options.key === "rzp_test_YOUR_KEY_HERE") {
+    let confirmMock = confirm("TEST MODE: No Razorpay Key set. Do you want to simulate a successful payment of ₹" + amount + " to test the automatic unlock feature?");
+    if (confirmMock) {
+      options.handler({ razorpay_payment_id: "pay_mock_" + Math.random().toString(36).substring(7) });
+    }
+    return;
+  }
+
+  var rzp1 = new Razorpay(options);
+  rzp1.on('payment.failed', function (response){
+      showFormError("Payment Failed: " + response.error.description);
+  });
+  rzp1.open();
+}
+
 function initFirebase() {
   var firebaseConfig = {
     apiKey: "AIzaSyBT7qT7JFc0X0VVm42-2rhcYi8CiTxSuu0",
@@ -602,15 +662,15 @@ function initFirebase() {
     appId: "1:801926232346:web:5566030011959047fe54a3",
     measurementId: "G-8R2GC56CQJ"
   };
-  
+
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   var db = firebase.database();
-  
+
   // Listen for new children in the 'notifications' nodes
   var notifRef = db.ref('notifications');
-  notifRef.limitToLast(1).on('child_added', function(snapshot) {
+  notifRef.limitToLast(1).on('child_added', function (snapshot) {
     var data = snapshot.val();
     if (data && data.message) {
       showFirebaseNotification(data.message);
@@ -623,7 +683,7 @@ function showFirebaseNotification(message) {
   if (!popup) return;
   document.getElementById('firebase-notification-text').innerText = message;
   popup.style.display = 'block';
-  
+
   setTimeout(() => {
     popup.style.opacity = '1';
   }, 10);
