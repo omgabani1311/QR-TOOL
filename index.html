@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="description" content="Generate UPI QR code with invoice instantly. Free online QR generator for payments. Fast, easy and secure.">
+  <meta charset="UTF-8">₹
+  <meta name="description"
+    content="Generate UPI QR code with invoice instantly. Free online QR generator for payments. Fast, easy and secure.">
   <title>UPI QR Invoice Generator</title>
 
   <link rel="stylesheet" href="qr.css">
@@ -15,6 +16,8 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
 </head>
 
@@ -32,79 +35,88 @@
 
     <div id="form-error" class="error" style="display:none;"></div>
 
-
     <!-- Success Popup -->
-    <div id="success-popup" style="display: none; position: fixed; top: 20px; right: 20px; background-color: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #1e7e34;">
+    <div id="success-popup"
+      style="display: none; position: fixed; top: 20px; right: 20px; background-color: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #1e7e34;">
       <span id="success-popup-message">Success!</span>
     </div>
 
     <!-- Firebase Notification Popup -->
-    <div id="firebase-notification" style="display: none; position: fixed; top: 80px; right: 20px; background-color: #007bff; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #0056b3;">
+    <div id="firebase-notification"
+      style="display: none; position: fixed; top: 80px; right: 20px; background-color: #007bff; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-family: sans-serif; opacity: 0; transition: opacity 0.3s ease; font-weight: bold; border-left: 5px solid #0056b3;">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
         <span id="firebase-notification-text" style="font-size: 15px;">New Notification</span>
       </div>
     </div>
 
-    <!-- Login Page -->
-    <form id="login-page" style="display:none;" onsubmit="event.preventDefault(); login();">
-      <h3 style="margin-top:0;">Login</h3>
-      <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Enter your phone number and password to login.</p>
-
-      <label>Phone Number</label>
-      <input id="login-contact" placeholder="Phone Number">
-      <span class="error" id="login-contact-error"></span>
-
-      <label>Password</label>
-      <input type="password" id="login-password" placeholder="Password">
-      <span class="error" id="login-password-error"></span>
-
-      <button type="submit" style="margin-top: 10px;">Login</button>
-
-      <div style="margin-top: 15px; text-align: center;">
-        <span style="font-size: 14px; color: #666;">New user ?</span>
-        <a href="#" onclick="showRegistration()"
-          style="font-size: 14px; color: #007bff; text-decoration: none;">Register here</a>
+    <!-- Subscription Page -->
+    <div id="subscription-page" style="display:none; text-align: center; padding: 40px 20px;">
+      <h2>Subscription Required</h2>
+      <p style="color: #666; margin-bottom: 20px;">You need an active subscription to access this tool.</p>
+      <div
+        style="background: #fdfbf7; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: inline-block;">
+        <h3 style="margin-top: 0;">Monthly Plan</h3>
+        <p style="font-size: 24px; font-weight: bold; color: #28a745;">₹499 / month</p>
+        <button type="button"
+          onclick="window.open('https://wa.me/911234567890?text=I%20want%20to%20subscribe', '_blank')"
+          style="background-color: #007bff; width: 100%; border: none; padding: 10px; color: white; border-radius: 4px; cursor: pointer; font-size: 16px;">Contact
+          Admin to Subscribe</button>
       </div>
-    </form>
+      <div style="margin-top: 20px;">
+        <button type="button" onclick="logout()"
+          style="background-color: transparent; border: 1px solid #dc3545; padding: 8px 15px; color: #dc3545; border-radius: 4px; cursor: pointer;">Logout</button>
+      </div>
+    </div>
 
-    <!-- Registration Page -->
+    <!-- Login Page -->
+    <div id="login-page" style="display:none; text-align: center; max-width: 400px; margin: 40px auto; padding: 20px;">
+      <h3 style="margin-top:0; font-size: 22px;">Welcome</h3>
+      <p style="font-size: 14px; margin-bottom: 30px; color: #666;">Sign in securely to access your invoice tool.</p>
+
+      <button type="button" onclick="signInWithGoogle()"
+        style="background-color: #4285F4; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="currentColor"
+            d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1H21.35Z" />
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <!-- Profile Setup Page -->
     <form id="registration-page" style="display:none;" onsubmit="event.preventDefault(); saveProfile();">
-      <h3 style="margin-top:0;">Profile Registration</h3>
-      <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Register your payee details once to auto-fill future
+      <h3 style="margin-top:0;">Payee Details Setup</h3>
+      <p style="font-size: 14px; margin-bottom: 20px; color: #666;">Provide your payee details to auto-fill future
         invoices.</p>
 
-      <label>Full Name</label>
-      <input id="reg-fullname" placeholder="Your Full Name" autocomplete="off">
-      <span class="error" id="reg-fullname-error"></span>
+      <label>Payee Name / Company</label>
+      <input id="reg-name" placeholder="Your Name or Company Name" autocomplete="off">
+      <span class="error" id="reg-name-error"></span>
 
-      <label>Email or Phone Number</label>
+      <label>UPI ID</label>
+      <input id="reg-upi" placeholder="e.g., user@bank" autocomplete="off">
+      <span class="error" id="reg-upi-error"></span>
+
+      <label>Phone / Email for Invoice Contact</label>
       <input id="reg-contact" placeholder="Email or Phone Number" autocomplete="off">
       <span class="error" id="reg-contact-error"></span>
 
-      <div id="reg-fields-section" style="margin-top: 15px;">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="Password" autocomplete="off">
-        <span class="error" id="reg-password-error"></span>
-
-        <label>Payee Name</label>
-        <input id="reg-name" placeholder="Your Name or Company">
-        <span class="error" id="reg-name-error"></span>
-
-        <label>UPI ID</label>
-        <input id="reg-upi" placeholder="e.g., user@bank">
-        <span class="error" id="reg-upi-error"></span>
-
-        <label>Company Logo (Optional)</label>
-        <input type="file" id="reg-logo" accept="image/png, image/jpeg" style="margin-bottom: 10px;">
-
-        <button type="submit" style="margin-top: 10px;">Register</button>
+      <div style="display: none;">
+        <label>Full Name</label>
+        <input id="reg-fullname" placeholder="Your Full Name" autocomplete="off">
       </div>
 
-      <div style="margin-top: 15px; text-align: center;">
-        <span style="font-size: 14px; color: #666;">Already registered?</span>
-        <a href="#" onclick="showLogin()" style="font-size: 14px; color: #007bff; text-decoration: none;">Login here</a>
-      </div>
+      <label>Company Logo (Optional)</label>
+      <input type="file" id="reg-logo" accept="image/png, image/jpeg" style="margin-bottom: 10px;">
+
+      <button type="submit" style="margin-top: 20px;">Save Profile Details</button>
+      <button type="button" onclick="logout()"
+        style="margin-top: 15px; background-color: transparent; color: #dc3545; border: none; font-size: 14px; cursor: pointer;">Logout</button>
     </form>
 
     <!-- Main Invoice Form -->
