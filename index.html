@@ -20,20 +20,46 @@
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
 
   <style>
-    .container { max-width: 900px !important; }
-    #login-page, #registration-page, #form { max-width: 500px; margin: 0 auto; width: 100%; }
-    
-    #card .invoice-table th, #card .invoice-table td {
+    .container {
+      max-width: 900px !important;
+    }
+
+    #login-page,
+    #registration-page,
+    #form {
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    #card .invoice-table th,
+    #card .invoice-table td {
       border: none !important;
       padding: 10px 0 !important;
       background: transparent !important;
     }
-    #card .invoice-table th { border-bottom: 1px solid #ddd !important; }
-    #card .invoice-table td { border-bottom: 1px solid #f0f0f0 !important; }
-    #card .invoice-table td:first-child, #card .invoice-table th:first-child { text-align: left !important; }
-    #card .invoice-table td:nth-child(2), #card .invoice-table th:nth-child(2),
-    #card .invoice-table td:nth-child(3), #card .invoice-table th:nth-child(3),
-    #card .invoice-table td:last-child, #card .invoice-table th:last-child { text-align: right !important; }
+
+    #card .invoice-table th {
+      border-bottom: 1px solid #ddd !important;
+    }
+
+    #card .invoice-table td {
+      border-bottom: 1px solid #f0f0f0 !important;
+    }
+
+    #card .invoice-table td:first-child,
+    #card .invoice-table th:first-child {
+      text-align: left !important;
+    }
+
+    #card .invoice-table td:nth-child(2),
+    #card .invoice-table th:nth-child(2),
+    #card .invoice-table td:nth-child(3),
+    #card .invoice-table th:nth-child(3),
+    #card .invoice-table td:last-child,
+    #card .invoice-table th:last-child {
+      text-align: right !important;
+    }
   </style>
 </head>
 
@@ -130,7 +156,8 @@
         <div style="display: flex; gap: 10px;">
           <button type="button" onclick="downloadInvoicesCSV()" title="Download Invoices CSV"
             style="padding: 8px; font-size: 13px; background: #28a745; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; margin-top: 0; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -218,19 +245,24 @@
 
     <div class="result" id="result">
 
-      <div id="card" style="position: relative; overflow: hidden; background: #fdfbf7; padding: 30px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: row; gap: 30px; color: #222;">
-        <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png" crossorigin="anonymous" class="watermark-logo" style="opacity: 0.03;">
-        
+      <div id="card"
+        style="position: relative; overflow: hidden; background: #fdfbf7; padding: 30px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: row; gap: 30px; color: #222;">
+        <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png"
+          crossorigin="anonymous" class="watermark-logo" style="opacity: 0.03;">
+
         <!-- Left Column -->
         <div style="flex: 1; display: flex; flex-direction: column;">
           <h3 id="rcompany" style="margin: 0; font-size: 20px; color: #000; font-weight: 800; text-align: left;"></h3>
-          <p id="rname" style="margin: 5px 0 15px; font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold; text-align: left;"></p>
-          
-          <div style="background: #e7ece5; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; width: fit-content; margin-bottom: 30px;">
+          <p id="rname"
+            style="margin: 5px 0 15px; font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold; text-align: left;">
+          </p>
+
+          <div
+            style="background: #e7ece5; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; width: fit-content; margin-bottom: 30px;">
             <div style="width: 8px; height: 8px; background: #28a745; border-radius: 50%;"></div>
             <span id="rupi" style="font-size: 13px; font-weight: bold; color: #333;"></span>
           </div>
-          
+
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; margin-top: auto;">
             <tr>
               <td style="color: #666; padding-bottom: 10px; width: 60px;">Invoice</td>
@@ -245,18 +277,23 @@
               <td style="font-weight: bold; color: #111;" id="rphone"></td>
             </tr>
           </table>
-          
+
           <span id="rclient" style="display:none;"></span>
           <span id="rclient-phone" style="display:none;"></span>
         </div>
 
         <!-- Divider -->
-        <div style="width: 1px; background: #e5e5e5; display: block; border-radius: 2px;"></div>
+        <div style="width: 1px; background: #e5e5e5; display: block; border-radius: 2px;"></div>  
 
         <!-- Center Column -->
-        <div style="width: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-          <p style="margin: 0 0 15px 0; font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #666; text-transform: uppercase;">SCAN TO PAY</p>
-          <div id="qrcode" style="padding: 10px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center;"></div>
+        <div
+          style="width: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <p
+            style="margin: 0 0 15px 0; font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #666; text-transform: uppercase;">
+            SCAN TO PAY</p>
+          <div id="qrcode"
+            style="padding: 10px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center;">
+          </div>
           <p style="margin: 15px 0 0 0; font-size: 10px; font-weight: bold; letter-spacing: 2px; color: #666;">UPI</p>
         </div>
 
@@ -268,29 +305,44 @@
           <table class="invoice-table" style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
             <thead>
               <tr>
-                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: left; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Description</th>
-                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Qty</th>
-                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Unit Price</th>
-                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Total</th>
+                <th
+                  style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: left; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                  Description</th>
+                <th
+                  style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                  Qty</th>
+                <th
+                  style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                  Unit Price</th>
+                <th
+                  style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                  Total</th>
               </tr>
             </thead>
             <tbody id="invoice-products" style="font-size: 13px; color: #111; font-weight: 600;">
             </tbody>
           </table>
-          
+
           <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto;">
             <div style="text-align: left;">
-              <p style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Billed To</p>
+              <p
+                style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                Billed To</p>
               <p style="margin: 0; font-size: 14px; font-weight: 800; color: #111;" id="bottom-client"></p>
               <p style="margin: 3px 0 0 0; font-size: 12px; color: #666;" id="bottom-client-phone"></p>
             </div>
             <div style="text-align: right;">
-              <p style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Total Amount</p>
-              <p style="margin: 0; font-size: 28px; font-weight: 900; color: #111; display: flex; align-items: baseline; justify-content: flex-end; gap: 5px;">
+              <p
+                style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                Total Amount</p>
+              <p
+                style="margin: 0; font-size: 28px; font-weight: 900; color: #111; display: flex; align-items: baseline; justify-content: flex-end; gap: 5px;">
                 <span style="font-size: 16px; color: #666; font-weight: 500;">₹</span><span id="ramount"></span>
               </p>
-              <span id="radvance-row" style="display:none; font-size: 11px;">Advance: ₹<span id="radvance"></span></span>
-              <span id="rpending-row" style="display:none; font-size: 11px; color:#d9534f; margin-left: 5px;">Pending: ₹<span id="rpending"></span></span>
+              <span id="radvance-row" style="display:none; font-size: 11px;">Advance: ₹<span
+                  id="radvance"></span></span>
+              <span id="rpending-row" style="display:none; font-size: 11px; color:#d9534f; margin-left: 5px;">Pending:
+                ₹<span id="rpending"></span></span>
             </div>
           </div>
         </div>
@@ -298,13 +350,22 @@
 
       <div class="actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
         <div style="display: flex; gap: 10px; justify-content: center; width: 100%;">
-          <button onclick="newEntry()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">+ New Entry</button>
-          <button onclick="shareWhatsApp()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Share WhatsApp</button>
-          <button onclick="downloadJPG()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download JPG</button>
-          <button onclick="downloadPDF()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download PDF</button>
+          <button onclick="newEntry()"
+            style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">+
+            New Entry</button>
+          <button onclick="shareWhatsApp()"
+            style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Share
+            WhatsApp</button>
+          <button onclick="downloadJPG()"
+            style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download
+            JPG</button>
+          <button onclick="downloadPDF()"
+            style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download
+            PDF</button>
         </div>
         <div class="brand" style="text-align: center; margin-top: 10px;">
-          <a href="https://instagram.com/anantam.media" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #666; font-size: 11px; font-weight: bold;">
+          <a href="https://instagram.com/anantam.media" target="_blank"
+            style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #666; font-size: 11px; font-weight: bold;">
             Powered by ANANTAM
           </a>
         </div>
