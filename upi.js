@@ -498,32 +498,9 @@ function shareWhatsApp() {
 
   let waPhoneStr = clientPhone.length === 10 ? `91${clientPhone}` : clientPhone;
 
-  html2canvas(document.getElementById("card"), { useCORS: true, scale: 2 }).then(canvas => {
-    canvas.toBlob(function (blob) {
-      if (!blob) return;
-      const file = new File([blob], 'invoice.jpg', { type: 'image/jpeg' });
-
-      const shareData = {
-        files: [file],
-        title: 'Invoice',
-        text: msg
-      };
-
-      if (navigator.canShare && navigator.canShare(shareData)) {
-        navigator.share(shareData).then(() => {
-          showSuccessPopup("Shared successfully!");
-        }).catch(err => {
-          console.error("Error sharing:", err);
-          // Fallback if user cancels or there is an issue
-          window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
-        });
-      } else {
-        // Fallback for browsers that don't support file sharing
-        window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
-        showSuccessPopup("Opened WhatsApp to share!");
-      }
-    }, 'image/jpeg', 0.9);
-  });
+  // Direct redirection to the client's WhatsApp number
+  window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
+  showSuccessPopup("Opened WhatsApp securely!");
 }
 
 function downloadJPG() {
