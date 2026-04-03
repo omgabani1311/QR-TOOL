@@ -22,34 +22,59 @@ function checkProfileWithFirestore(user) {
     return;
   }
 
-  let payeeName = localStorage.getItem("payeeName");
-  if (!payeeName) {
-    document.getElementById("registration-page").style.display = "block";
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("form").style.display = "none";
-  } else {
-    document.getElementById("registration-page").style.display = "none";
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("form").style.display = "block";
-
-    let savedLogo = localStorage.getItem("companyLogo");
-    let displayLogo = document.getElementById("display-company-logo");
-    if (savedLogo) {
-      displayLogo.src = savedLogo;
-      displayLogo.style.display = "inline-block";
+  // Check firebase DB for real profile completion first
+  let db = firebase.database();
+  db.ref('users/' + user.uid).once('value').then((snapshot) => {
+    if (snapshot.exists()) {
+      let data = snapshot.val();
+      localStorage.setItem("contact", data.contact || "");
+      localStorage.setItem("payeeName", data.payeeName || "");
+      localStorage.setItem("upiId", data.upiId || "");
+      localStorage.setItem("isRegistered", "true");
+      if (data.companyLogo) {
+        localStorage.setItem("companyLogo", data.companyLogo);
+      } else {
+        localStorage.removeItem("companyLogo");
+      }
+      showMainForm(user);
     } else {
-      displayLogo.style.display = "none";
+      // Data does not exist in DB -> First time Google Login -> Force Registration
+      document.getElementById("registration-page").style.display = "block";
     }
-    document.getElementById("name").value = payeeName;
-    document.getElementById("upi").value = localStorage.getItem("upiId");
+  }).catch((err) => {
+    console.error("DB check failed:", err);
+    // Fallback: If network issue, see if local storage has anything
+    if (localStorage.getItem("payeeName")) {
+      showMainForm(user);
+    } else {
+      document.getElementById("registration-page").style.display = "block";
+    }
+  });
+}
 
-    let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
-    document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
+function showMainForm(user) {
+  document.getElementById("registration-page").style.display = "none";
+  document.getElementById("login-page").style.display = "none";
+  document.getElementById("form").style.display = "block";
 
-    let lastInvoice = localStorage.getItem('lastInvoice') || 0;
-    let nextInvoice = parseInt(lastInvoice) + 1;
-    document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+  let savedLogo = localStorage.getItem("companyLogo");
+  let displayLogo = document.getElementById("display-company-logo");
+  if (savedLogo) {
+    displayLogo.src = savedLogo;
+    displayLogo.style.display = "inline-block";
+  } else {
+    displayLogo.style.display = "none";
   }
+  
+  document.getElementById("name").value = localStorage.getItem("payeeName") || "";
+  document.getElementById("upi").value = localStorage.getItem("upiId") || "";
+
+  let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
+  document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
+
+  let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+  let nextInvoice = parseInt(lastInvoice) + 1;
+  document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
 }
 
 function signInWithGoogle() {
@@ -64,11 +89,23 @@ function signInWithGoogle() {
 
 function logout() {
   firebase.auth().signOut().then(() => {
+    localStorage.removeItem("contact");
+    localStorage.removeItem("payeeName");
+    localStorage.removeItem("upiId");
+    localStorage.removeItem("isRegistered");
+    localStorage.removeItem("companyLogo");
+    localStorage.removeItem("fullname");
     showSuccessPopup("Logged out successfully!");
   });
 }
 
 function saveProfile() {
+  let user = firebase.auth().currentUser;
+  if (!user) {
+    showFormError("You must be logged in to save profile");
+    return;
+  }
+
   let contact = document.getElementById("reg-contact").value.trim();
   let name = document.getElementById("reg-name").value.trim();
   let upi = document.getElementById("reg-upi").value.trim();
@@ -94,25 +131,41 @@ function saveProfile() {
 
   if (hasError) return;
 
-  localStorage.setItem("contact", contact);
-  localStorage.setItem("payeeName", name);
-  localStorage.setItem("upiId", upi);
-  localStorage.setItem("isRegistered", "true");
+  let profileData = {
+    contact: contact,
+    payeeName: name,
+    upiId: upi,
+    updatedAt: new Date().toISOString()
+  };
 
-  logToLocalStorage("Profile Setup", contact, name, upi);
+  const finalizeSave = () => {
+    firebase.database().ref('users/' + user.uid).set(profileData).then(() => {
+      localStorage.setItem("contact", contact);
+      localStorage.setItem("payeeName", name);
+      localStorage.setItem("upiId", upi);
+      localStorage.setItem("isRegistered", "true");
+      if (profileData.companyLogo) localStorage.setItem("companyLogo", profileData.companyLogo);
+      else localStorage.removeItem("companyLogo");
+
+      showSuccessPopup("Profile updated and linked effectively!");
+      checkProfileWithFirestore(user);
+    }).catch(err => {
+      console.error(err);
+      showFormError("Database failure. Contact support.");
+    });
+  };
 
   if (logoFile) {
     let reader = new FileReader();
     reader.onload = function (e) {
-      localStorage.setItem("companyLogo", e.target.result);
-      showSuccessPopup("Profile updated successfully!");
-      checkProfileWithFirestore(firebase.auth().currentUser);
+      profileData.companyLogo = e.target.result;
+      finalizeSave();
     };
     reader.readAsDataURL(logoFile);
   } else {
-    localStorage.removeItem("companyLogo");
-    showSuccessPopup("Profile updated successfully!");
-    checkProfileWithFirestore(firebase.auth().currentUser);
+    let existingLogo = localStorage.getItem("companyLogo");
+    if (existingLogo) profileData.companyLogo = existingLogo;
+    finalizeSave();
   }
 }
 
