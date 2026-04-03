@@ -127,14 +127,13 @@
       <input id="reg-upi" placeholder="e.g., user@bank" autocomplete="off">
       <span class="error" id="reg-upi-error"></span>
 
-      <label>Name: </label>
-      <input id="reg-contact" placeholder=" Your Name" autocomplete="off">
-      <span class="error" id="reg-contact-error"></span>
+      <label>Name</label>
+      <input id="reg-fullname" placeholder="Your Name" autocomplete="off">
+      <span class="error" id  ="reg-fullname-error"></span>
 
-      <div style="display: none;">
-        <label>Full Name</label>
-        <input id="reg-fullname" placeholder="Your Full Name" autocomplete="off">
-      </div>
+      <label>Phone No.</label>
+      <input id="reg-contact" placeholder=" Phone Number" autocomplete="off">
+      <span class="error" id="reg-contact-error"></span>
 
       <label>Company Logo (Optional)</label>
       <input type="file" id="reg-logo" accept="image/png, image/jpeg" style="margin-bottom: 10px;">
@@ -253,7 +252,8 @@
 
         <!-- Left Column -->
         <div style="flex: 1; display: flex; flex-direction: column;">
-          <h3 id="rcompany" style="margin: 0 0 15px 0; font-size: 24px; color: #000; font-weight: 800; text-align: left;"></h3>
+          <h3 id="rcompany"
+            style="margin: 0 0 15px 0; font-size: 24px; color: #000; font-weight: 800; text-align: left;"></h3>
           <p id="rname" style="display: none;"></p>
 
           <div
@@ -271,7 +271,14 @@
               <td style="color: #666; padding-bottom: 10px;">Date</td>
               <td style="font-weight: bold; color: #111; padding-bottom: 10px;" id="rdate"></td>
             </tr>
-            
+            <tr id="rfullname-row">
+              <td style="color: #666; padding-bottom: 10px;">Name</td>
+              <td style="font-weight: bold; color: #111; padding-bottom: 10px;" id="rfullname"></td>
+            </tr>
+            <tr>
+              <td style="color: #666;"><span id="rphone-label">Phone</span></td>
+              <td style="font-weight: bold; color: #111;" id="rphone"></td>
+            </tr>
           </table>
 
           <span id="rclient" style="display:none;"></span>
