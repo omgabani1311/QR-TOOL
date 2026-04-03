@@ -28,7 +28,7 @@ function checkProfileWithFirestore(user) {
     if (snapshot.exists()) {
       let data = snapshot.val();
       localStorage.setItem("contact", data.contact || "");
-      localStorage.setItem("fullname", data.fullname || "");
+      localStorage.setItem("fullname", data.fullname || user.displayName || "");
       localStorage.setItem("payeeName", data.payeeName || "");
       localStorage.setItem("upiId", data.upiId || "");
       localStorage.setItem("isRegistered", "true");
@@ -471,8 +471,22 @@ function generateQR() {
   document.getElementById("rupi").innerText = upi;
 
   let rfullnameElem = document.getElementById("rfullname");
+  let rfullnameRow = document.getElementById("rfullname-row");
   if (rfullnameElem) {
-    rfullnameElem.innerText = localStorage.getItem("fullname") || "";
+    let fn = localStorage.getItem("fullname");
+    if (!fn) {
+      // Fallback if somehow still empty
+      let currentUser = firebase.auth().currentUser;
+      if (currentUser && currentUser.displayName) {
+        fn = currentUser.displayName;
+      } else {
+        fn = localStorage.getItem("payeeName") || "";
+      }
+    }
+    rfullnameElem.innerText = fn;
+    if (rfullnameRow) {
+      rfullnameRow.style.display = fn ? "table-row" : "none";
+    }
   }
 
   let companyNameElem = document.getElementById("rcompany");
