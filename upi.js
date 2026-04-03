@@ -470,7 +470,7 @@ function generateQR() {
 
   window.scrollTo(0, 0);
   showSuccessPopup("Invoice generated successfully!");
-  
+
   // Log the generated invoice
   logInvoiceToFirebase(invoice, total, client, clientPhone);
 }
@@ -497,32 +497,32 @@ function shareWhatsApp() {
   let msg = `Invoice Payment\n\nCompany: ${company}\nPhone: ${phone}\nInvoice: ${invoice}\nDate: ${date}\nClient: ${client}\nClient Phone: ${clientPhone}\nPayee Name: ${payeeName}\nUPI: ${upi}\n${amountText}`;
 
   let waPhoneStr = clientPhone.length === 10 ? `91${clientPhone}` : clientPhone;
-  let waUrl = `https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`;
-
-  showSuccessPopup("Preparing image...");
 
   html2canvas(document.getElementById("card"), { useCORS: true, scale: 2 }).then(canvas => {
     canvas.toBlob(function (blob) {
-      if (!blob) {
-        window.open(waUrl, '_blank');
-        return;
-      }
-      
-      try {
-        const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]).then(() => {
-          alert("✓ Image copied to clipboard!\n\nWhen WhatsApp opens, just PASTE the image in the chat and send.");
-          window.open(waUrl, '_blank');
+      if (!blob) return;
+      const file = new File([blob], 'invoice.jpg', { type: 'image/jpeg' });
+
+      const shareData = {
+        files: [file],
+        title: 'Invoice',
+        text: msg
+      };
+
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        navigator.share(shareData).then(() => {
+          showSuccessPopup("Shared successfully!");
         }).catch(err => {
-          console.error("Clipboard copy failed:", err);
-          // If copy fails
-          window.open(waUrl, '_blank');
+          console.error("Error sharing:", err);
+          // Fallback if user cancels or there is an issue
+          window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
         });
-      } catch (e) {
-        console.error("Clipboard API not supported:", e);
-        window.open(waUrl, '_blank');
+      } else {
+        // Fallback for browsers that don't support file sharing
+        window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
+        showSuccessPopup("Opened WhatsApp to share!");
       }
-    }, 'image/png');
+    }, 'image/jpeg', 0.9);
   });
 }
 
@@ -712,14 +712,14 @@ function logInvoiceToFirebase(invoiceNumber, totalAmount, clientName, clientPhon
 function downloadInvoicesCSV() {
   if (typeof firebase !== 'undefined' && firebase.database && firebase.auth) {
     let db = firebase.database();
-    
+
     db.ref('invoice_logs').once('value').then((snapshot) => {
       let data = snapshot.val();
       if (!data) {
         showFormError("No invoice data found.");
         return;
       }
-      
+
       let csvContent = "Timestamp,Google ID,Invoice Number,Client Name,Total Amount\n";
       for (let key in data) {
         let row = data[key];
@@ -728,10 +728,10 @@ function downloadInvoicesCSV() {
         let invoiceNum = row.invoiceNumber ? row.invoiceNumber.replace(/"/g, '""') : '';
         let client = row.clientName ? row.clientName.replace(/"/g, '""') : '';
         let amount = row.totalAmount !== undefined ? row.totalAmount : '';
-        
+
         csvContent += `"${timestamp}","${googleId}","${invoiceNum}","${client}","${amount}"\n`;
       }
-      
+
       let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       let url = URL.createObjectURL(blob);
       let link = document.createElement("a");
@@ -740,13 +740,13 @@ function downloadInvoicesCSV() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       showSuccessPopup("Excel downloaded successfully!");
     }).catch(err => {
       console.error(err);
       showFormError("Failed to fetch data.");
     });
   } else {
-     showFormError("Firebase is not initialized.");
+    showFormError("Firebase is not initialized.");
   }
 }
