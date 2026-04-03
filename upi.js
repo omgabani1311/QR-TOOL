@@ -497,10 +497,33 @@ function shareWhatsApp() {
   let msg = `Invoice Payment\n\nCompany: ${company}\nPhone: ${phone}\nInvoice: ${invoice}\nDate: ${date}\nClient: ${client}\nClient Phone: ${clientPhone}\nPayee Name: ${payeeName}\nUPI: ${upi}\n${amountText}`;
 
   let waPhoneStr = clientPhone.length === 10 ? `91${clientPhone}` : clientPhone;
+  let waUrl = `https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`;
 
-  // Direct redirection to the client's WhatsApp number
-  window.open(`https://wa.me/${waPhoneStr}?text=${encodeURIComponent(msg)}`, '_blank');
-  showSuccessPopup("Opened WhatsApp securely!");
+  showSuccessPopup("Preparing image...");
+
+  html2canvas(document.getElementById("card"), { useCORS: true, scale: 2 }).then(canvas => {
+    canvas.toBlob(function (blob) {
+      if (!blob) {
+        window.open(waUrl, '_blank');
+        return;
+      }
+      
+      try {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item]).then(() => {
+          alert("✓ Image copied to clipboard!\n\nWhen WhatsApp opens, just PASTE the image in the chat and send.");
+          window.open(waUrl, '_blank');
+        }).catch(err => {
+          console.error("Clipboard copy failed:", err);
+          // If copy fails
+          window.open(waUrl, '_blank');
+        });
+      } catch (e) {
+        console.error("Clipboard API not supported:", e);
+        window.open(waUrl, '_blank');
+      }
+    }, 'image/png');
+  });
 }
 
 function downloadJPG() {
