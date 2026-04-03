@@ -18,6 +18,23 @@
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
+
+  <style>
+    .container { max-width: 900px !important; }
+    #login-page, #registration-page, #form { max-width: 500px; margin: 0 auto; width: 100%; }
+    
+    #card .invoice-table th, #card .invoice-table td {
+      border: none !important;
+      padding: 10px 0 !important;
+      background: transparent !important;
+    }
+    #card .invoice-table th { border-bottom: 1px solid #ddd !important; }
+    #card .invoice-table td { border-bottom: 1px solid #f0f0f0 !important; }
+    #card .invoice-table td:first-child, #card .invoice-table th:first-child { text-align: left !important; }
+    #card .invoice-table td:nth-child(2), #card .invoice-table th:nth-child(2),
+    #card .invoice-table td:nth-child(3), #card .invoice-table th:nth-child(3),
+    #card .invoice-table td:last-child, #card .invoice-table th:last-child { text-align: right !important; }
+  </style>
 </head>
 
 <body>
@@ -201,124 +218,96 @@
 
     <div class="result" id="result">
 
-      <div id="card"
-        style="position: relative; overflow: hidden; background: #fdfbf7; padding: 40px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-        <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png"
-          crossorigin="anonymous" class="watermark-logo" style="opacity: 0.03;">
-
-        <div class="header"
-          style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-          <div style="text-align: left;">
-            <p style="margin: 0; font-size: 14px; color: #555; font-weight: bold; text-transform: uppercase;">Invoice
-              Details</p>
+      <div id="card" style="position: relative; overflow: hidden; background: #fdfbf7; padding: 30px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: row; gap: 30px; color: #222;">
+        <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png" crossorigin="anonymous" class="watermark-logo" style="opacity: 0.03;">
+        
+        <!-- Left Column -->
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <h3 id="rcompany" style="margin: 0; font-size: 20px; color: #000; font-weight: 800; text-align: left;"></h3>
+          <p id="rname" style="margin: 5px 0 15px; font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold; text-align: left;"></p>
+          
+          <div style="background: #e7ece5; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; width: fit-content; margin-bottom: 30px;">
+            <div style="width: 8px; height: 8px; background: #28a745; border-radius: 50%;"></div>
+            <span id="rupi" style="font-size: 13px; font-weight: bold; color: #333;"></span>
           </div>
-          <div style="text-align: right;">
-            <p style="margin: 0; font-size: 14px; font-weight: bold; color: #333;">Invoice No: <span id="rinvoice"
-                style="font-weight: normal;"></span></p>
-            <p style="margin: 4px 0 0 0; font-size: 14px; color: #333;">Date: <span id="rdate"
-                style="font-weight: normal;"></span></p>
-          </div>
-        </div>
-
-        <div
-          style="background-color: #e7ece5; padding: 12px 15px; border-radius: 4px; border: 1px solid #c7cfc5; display: flex; justify-content: space-between; margin-bottom: 25px;">
-          <div style="display: flex; flex-direction: column;">
-            <p style="margin: 0; font-size: 15px; font-weight: bold; color: #222;" id="rname"></p>
-            <p style="margin: 2px 0 0 0; font-size: 12px; color: #444;">UPI ID: <span id="rupi"></span></p>
-          </div>
-          <div style="text-align: right; display: flex; flex-direction: column;">
-            <p style="margin: 0; font-size: 13px; color: #444; font-weight: bold;">Provider</p>
-            <p style="display:none;">Client : <span id="rclient"></span></p>
-            <p style="display:none;">Client Phone: <span id="rclient-phone"></span></p>
-          </div>
-        </div>
-
-        <div style="text-align: center; margin: 30px 0 20px 0;">
-          <p
-            style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold; letter-spacing: 1px; color: #122744; background: #e2e8f0; display: inline-block; padding: 4px 12px; border-radius: 20px;">
-            SCAN TO PAY</p>
-          <h3 id="rcompany" style="margin: 0 0 5px 0; font-size: 24px; color: #000; font-weight: 800;"></h3>
-          <p style="margin: 0; font-size: 14px; color: #555;"><span id="rphone-label">Phone:</span> <span
-              id="rphone"></span></p>
-
-        </div>
-
-        <div id="qrcode"
-          style="margin: 0 auto; display: flex; justify-content: center; align-items: center; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); width: max-content;">
-        </div>
-
-        <div style="text-align: center; margin-top: 10px; margin-bottom: 30px;">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="BHIM UPI"
-            style="height: 25px;">
-        </div>
-
-        <table class="invoice-table"
-          style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #cfd4cf; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
-          <thead style="background-color: #bac7b6;">
+          
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; margin-top: auto;">
             <tr>
-              <th
-                style="padding: 10px 12px; text-align: left; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
-                Item Description</th>
-              <th
-                style="padding: 10px 12px; text-align: center; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
-                Qty</th>
-              <th
-                style="padding: 10px 12px; text-align: right; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
-                Unit Price (₹)</th>
-              <th
-                style="padding: 10px 12px; text-align: right; border-bottom: 1px solid #cfd4cf; font-size: 13px; color: #1e281b; font-weight: bold;">
-                Total (₹)</th>
+              <td style="color: #666; padding-bottom: 10px; width: 60px;">Invoice</td>
+              <td style="font-weight: bold; color: #111; padding-bottom: 10px;" id="rinvoice"></td>
             </tr>
-          </thead>
-          <tbody id="invoice-products" style="background: white;"></tbody>
-        </table>
+            <tr>
+              <td style="color: #666; padding-bottom: 10px;">Date</td>
+              <td style="font-weight: bold; color: #111; padding-bottom: 10px;" id="rdate"></td>
+            </tr>
+            <tr>
+              <td style="color: #666;"><span id="rphone-label">Phone</span></td>
+              <td style="font-weight: bold; color: #111;" id="rphone"></td>
+            </tr>
+          </table>
+          
+          <span id="rclient" style="display:none;"></span>
+          <span id="rclient-phone" style="display:none;"></span>
+        </div>
 
-        <div class="details" style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <div style="width: 48%; border: 1px solid #cfd4cf; border-radius: 4px; overflow: hidden;">
-            <div
-              style="background-color: #122744; color: white; padding: 6px 10px; font-size: 12px; font-weight: bold; text-transform: uppercase;">
-              Bill To</div>
-            <div
-              style="background-color: #f6f8f5; padding: 10px; min-height: 45px; display: flex; flex-direction: column; justify-content: center;">
-              <p style="margin: 0 0 2px 0; font-size: 14px; font-weight: bold; color: #111;" id="bottom-client"></p>
-              <p style="margin: 0; font-size: 13px; color: #555;" id="bottom-client-phone"></p>
+        <!-- Divider -->
+        <div style="width: 1px; background: #e5e5e5; display: block; border-radius: 2px;"></div>
+
+        <!-- Center Column -->
+        <div style="width: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <p style="margin: 0 0 15px 0; font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #666; text-transform: uppercase;">SCAN TO PAY</p>
+          <div id="qrcode" style="padding: 10px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center;"></div>
+          <p style="margin: 15px 0 0 0; font-size: 10px; font-weight: bold; letter-spacing: 2px; color: #666;">UPI • BHIM</p>
+        </div>
+
+        <!-- Divider -->
+        <div style="width: 1px; background: #e5e5e5; display: block; border-radius: 2px;"></div>
+
+        <!-- Right Column -->
+        <div style="flex: 2; display: flex; flex-direction: column;">
+          <table class="invoice-table" style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+              <tr>
+                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: left; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Description</th>
+                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Qty</th>
+                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Unit Price</th>
+                <th style="padding: 0 0 10px 0; border-bottom: 1px solid #ddd; text-align: right; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="invoice-products" style="font-size: 13px; color: #111; font-weight: 600;">
+            </tbody>
+          </table>
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto;">
+            <div style="text-align: left;">
+              <p style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Billed To</p>
+              <p style="margin: 0; font-size: 14px; font-weight: 800; color: #111;" id="bottom-client"></p>
+              <p style="margin: 3px 0 0 0; font-size: 12px; color: #666;" id="bottom-client-phone"></p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0 0 5px 0; font-size: 10px; color: #666; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Total Amount</p>
+              <p style="margin: 0; font-size: 28px; font-weight: 900; color: #111; display: flex; align-items: baseline; justify-content: flex-end; gap: 5px;">
+                <span style="font-size: 16px; color: #666; font-weight: 500;">₹</span><span id="ramount"></span>
+              </p>
+              <span id="radvance-row" style="display:none; font-size: 11px;">Advance: ₹<span id="radvance"></span></span>
+              <span id="rpending-row" style="display:none; font-size: 11px; color:#d9534f; margin-left: 5px;">Pending: ₹<span id="rpending"></span></span>
             </div>
           </div>
-
-          <div style="width: 48%; text-align: right; padding-top: 5px;">
-            <p style="margin: 0 0 5px 0; font-size: 14px; color: #444;">Total Amount</p>
-            <p style="margin: 0; font-size: 32px; font-weight: 900; color: #28a745;">₹<span id="ramount"></span></p>
-            <p id="radvance-row" style="display:none; margin: 6px 0 0 0; font-size: 14px;">Advance Amount : ₹<span
-                id="radvance"></span></p>
-            <p id="rpending-row"
-              style="display:none; margin: 4px 0 0 0; font-size: 15px; font-weight:bold; color:#d9534f;">Pending Amount
-              : ₹<span id="rpending"></span></p>
-          </div>
         </div>
-
       </div>
 
-      <div class="actions">
-
-        <button onclick="newEntry()" style="background-color: #28a745; margin-bottom: 10px;">Create New Entry</button>
-        <button onclick="shareWhatsApp()">Share WhatsApp</button>
-        <button onclick="downloadJPG()">Download JPG</button>
-        <button onclick="downloadPDF()">Download PDF</button>
-
-        <div class="brand">
-          <span style="color: #666; margin-bottom: 8px; display: block;">Powerd By:</span>
-          <a href="https://instagram.com/anantam.media" target="_blank"
-            style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #E1306C; font-weight: bold; font-size: 16px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </svg>
-            <span style="color: #111827; letter-spacing: 1px;">ANANTAM</span>
+      <div class="actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px; justify-content: center; width: 100%;">
+          <button onclick="newEntry()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">+ New Entry</button>
+          <button onclick="shareWhatsApp()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Share WhatsApp</button>
+          <button onclick="downloadJPG()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download JPG</button>
+          <button onclick="downloadPDF()" style="flex: 1; border: 1px solid #ccc; background: transparent; color: #333; margin: 0; border-radius: 8px; font-size: 13px; padding: 10px;">Download PDF</button>
+        </div>
+        <div class="brand" style="text-align: center; margin-top: 10px;">
+          <a href="https://instagram.com/anantam.media" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #666; font-size: 11px; font-weight: bold;">
+            Powered by ANANTAM
           </a>
         </div>
-
       </div>
 
     </div>
