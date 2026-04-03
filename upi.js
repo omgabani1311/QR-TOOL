@@ -470,6 +470,9 @@ function generateQR() {
 
   window.scrollTo(0, 0);
   showSuccessPopup("Invoice generated successfully!");
+  
+  // Log the generated invoice
+  logInvoiceToFirebase(invoice, total, client, clientPhone);
 }
 
 function shareWhatsApp() {
@@ -686,4 +689,64 @@ function downloadAllDataCSV() {
 
   link.click();
   document.body.removeChild(link);
+}
+
+function logInvoiceToFirebase(invoiceNumber, totalAmount, clientName, clientPhone) {
+  if (typeof firebase !== 'undefined' && firebase.auth && firebase.database) {
+    let user = firebase.auth().currentUser;
+    if (user) {
+      let email = user.email || user.uid;
+      let dateStr = new Date().toLocaleString();
+      let db = firebase.database();
+      db.ref('invoice_logs').push({
+        googleId: email,
+        invoiceNumber: invoiceNumber,
+        timestamp: dateStr,
+        clientName: clientName || '',
+        totalAmount: totalAmount || 0
+      });
+    }
+  }
+}
+
+function downloadInvoicesCSV() {
+  if (typeof firebase !== 'undefined' && firebase.database && firebase.auth) {
+    let db = firebase.database();
+    
+    db.ref('invoice_logs').once('value').then((snapshot) => {
+      let data = snapshot.val();
+      if (!data) {
+        showFormError("No invoice data found.");
+        return;
+      }
+      
+      let csvContent = "Timestamp,Google ID,Invoice Number,Client Name,Total Amount\n";
+      for (let key in data) {
+        let row = data[key];
+        let timestamp = row.timestamp ? row.timestamp.replace(/"/g, '""') : '';
+        let googleId = row.googleId ? row.googleId.replace(/"/g, '""') : '';
+        let invoiceNum = row.invoiceNumber ? row.invoiceNumber.replace(/"/g, '""') : '';
+        let client = row.clientName ? row.clientName.replace(/"/g, '""') : '';
+        let amount = row.totalAmount !== undefined ? row.totalAmount : '';
+        
+        csvContent += `"${timestamp}","${googleId}","${invoiceNum}","${client}","${amount}"\n`;
+      }
+      
+      let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      let url = URL.createObjectURL(blob);
+      let link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "invoices_excel.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showSuccessPopup("Excel downloaded successfully!");
+    }).catch(err => {
+      console.error(err);
+      showFormError("Failed to fetch data.");
+    });
+  } else {
+     showFormError("Firebase is not initialized.");
+  }
 }
