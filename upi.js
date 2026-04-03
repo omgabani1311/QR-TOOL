@@ -16,61 +16,40 @@ function checkProfileWithFirestore(user) {
   document.getElementById("login-page").style.display = "none";
   document.getElementById("form").style.display = "none";
   document.getElementById("result").style.display = "none";
-  let subsPage = document.getElementById("subscription-page");
-  if (subsPage) subsPage.style.display = "none";
 
   if (!user) {
     document.getElementById("login-page").style.display = "block";
     return;
   }
 
-  var db = firebase.firestore();
-  if (window.userProfileUnsubscribe) window.userProfileUnsubscribe();
+  let payeeName = localStorage.getItem("payeeName");
+  if (!payeeName) {
+    document.getElementById("registration-page").style.display = "block";
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("form").style.display = "none";
+  } else {
+    document.getElementById("registration-page").style.display = "none";
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("form").style.display = "block";
 
-  window.userProfileUnsubscribe = db.collection("users").doc(user.uid).onSnapshot((doc) => {
-    if (doc.exists && doc.data().active === true && new Date(doc.data().expiry) > new Date()) {
-      // Subscription is active
-      let payeeName = localStorage.getItem("payeeName");
-      if (!payeeName) {
-        document.getElementById("registration-page").style.display = "block";
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("form").style.display = "none";
-        if (subsPage) subsPage.style.display = "none";
-      } else {
-        document.getElementById("registration-page").style.display = "none";
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("form").style.display = "block";
-        if (subsPage) subsPage.style.display = "none";
-
-        let savedLogo = localStorage.getItem("companyLogo");
-        let displayLogo = document.getElementById("display-company-logo");
-        if (savedLogo) {
-          displayLogo.src = savedLogo;
-          displayLogo.style.display = "inline-block";
-        } else {
-          displayLogo.style.display = "none";
-        }
-        document.getElementById("name").value = payeeName;
-        document.getElementById("upi").value = localStorage.getItem("upiId");
-
-        let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
-        document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
-
-        let lastInvoice = localStorage.getItem('lastInvoice') || 0;
-        let nextInvoice = parseInt(lastInvoice) + 1;
-        document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
-      }
+    let savedLogo = localStorage.getItem("companyLogo");
+    let displayLogo = document.getElementById("display-company-logo");
+    if (savedLogo) {
+      displayLogo.src = savedLogo;
+      displayLogo.style.display = "inline-block";
     } else {
-      document.getElementById("registration-page").style.display = "none";
-      document.getElementById("login-page").style.display = "none";
-      document.getElementById("form").style.display = "none";
-      if (subsPage) subsPage.style.display = "block";
+      displayLogo.style.display = "none";
     }
-  }, err => {
-    console.error("Error fetching subscription:", err);
-    if (subsPage) subsPage.style.display = "block";
-    showFormError("Could not verify subscription.");
-  });
+    document.getElementById("name").value = payeeName;
+    document.getElementById("upi").value = localStorage.getItem("upiId");
+
+    let contactIdentity = localStorage.getItem("fullname") || localStorage.getItem("contact") || user.displayName || user.email;
+    document.getElementById("welcome-message").innerText = "Welcome, " + contactIdentity;
+
+    let lastInvoice = localStorage.getItem('lastInvoice') || 0;
+    let nextInvoice = parseInt(lastInvoice) + 1;
+    document.getElementById("invoice-number").value = "INV" + nextInvoice.toString().padStart(4, '0');
+  }
 }
 
 function signInWithGoogle() {
@@ -145,8 +124,6 @@ function editProfile() {
   document.getElementById("registration-page").style.display = "block";
   document.getElementById("form").style.display = "none";
   document.getElementById("result").style.display = "none";
-  let subsPage = document.getElementById("subscription-page");
-  if (subsPage) subsPage.style.display = "none";
 }
 
 function newEntry() {
@@ -602,17 +579,6 @@ function showSuccessPopup(message) {
   }, 3000);
 }
 
-function purchaseSubscription(plan, amount) {
-  let user = firebase.auth().currentUser;
-  if (!user) {
-    showFormError("You must be logged in to subscribe!");
-    return;
-  }
-  
-  // Placeholder: Await new payment gateway integration
-  console.log(`Ready to trigger new payment gateway for ${plan} (₹${amount})`);
-  showSuccessPopup("Loading payment gateway... Please wait.");
-}
 
 function initFirebase() {
   var firebaseConfig = {
