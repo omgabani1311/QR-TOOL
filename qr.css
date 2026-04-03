@@ -15,10 +15,11 @@ body {
 
 .container {
 
+    height: 100px;
     width: 90%;
     max-width: 500px;
     background: white;
-    padding: 225px;
+    padding: 25px;
     border-radius: 10px;
     position: relative;
     overflow: hidden;
