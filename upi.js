@@ -28,6 +28,7 @@ function checkProfileWithFirestore(user) {
     if (snapshot.exists()) {
       let data = snapshot.val();
       localStorage.setItem("contact", data.contact || "");
+      localStorage.setItem("fullname", data.fullname || "");
       localStorage.setItem("payeeName", data.payeeName || "");
       localStorage.setItem("upiId", data.upiId || "");
       localStorage.setItem("isRegistered", "true");
@@ -107,17 +108,23 @@ function saveProfile() {
   }
 
   let contact = document.getElementById("reg-contact").value.trim();
+  let fullname = document.getElementById("reg-fullname").value.trim();
   let name = document.getElementById("reg-name").value.trim();
   let upi = document.getElementById("reg-upi").value.trim();
   let logoFile = document.getElementById("reg-logo").files[0];
   let hasError = false;
 
   document.getElementById("reg-contact-error").innerText = "";
+  document.getElementById("reg-fullname-error").innerText = "";
   document.getElementById("reg-name-error").innerText = "";
   document.getElementById("reg-upi-error").innerText = "";
 
   if (!contact) {
     document.getElementById("reg-contact-error").innerText = "Contact Info is required.";
+    hasError = true;
+  }
+  if (!fullname) {
+    document.getElementById("reg-fullname-error").innerText = "Name is required.";
     hasError = true;
   }
   if (!name) {
@@ -133,6 +140,7 @@ function saveProfile() {
 
   let profileData = {
     contact: contact,
+    fullname: fullname,
     payeeName: name,
     upiId: upi,
     updatedAt: new Date().toISOString()
@@ -141,6 +149,7 @@ function saveProfile() {
   const finalizeSave = () => {
     firebase.database().ref('users/' + user.uid).set(profileData).then(() => {
       localStorage.setItem("contact", contact);
+      localStorage.setItem("fullname", fullname);
       localStorage.setItem("payeeName", name);
       localStorage.setItem("upiId", upi);
       localStorage.setItem("isRegistered", "true");
@@ -171,6 +180,7 @@ function saveProfile() {
 
 function editProfile() {
   document.getElementById("reg-contact").value = localStorage.getItem("contact") || "";
+  document.getElementById("reg-fullname").value = localStorage.getItem("fullname") || "";
   document.getElementById("reg-name").value = localStorage.getItem("payeeName") || "";
   document.getElementById("reg-upi").value = localStorage.getItem("upiId") || "";
 
@@ -459,6 +469,11 @@ function generateQR() {
 
   document.getElementById("rname").innerText = name;
   document.getElementById("rupi").innerText = upi;
+
+  let rfullnameElem = document.getElementById("rfullname");
+  if (rfullnameElem) {
+    rfullnameElem.innerText = localStorage.getItem("fullname") || "";
+  }
 
   let companyNameElem = document.getElementById("rcompany");
   if (companyNameElem) {
