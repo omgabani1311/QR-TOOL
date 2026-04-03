@@ -377,8 +377,8 @@ function generateQR() {
 
   new QRCode(qrContainer, {
     text: upiLink,
-    width: 250,
-    height: 250,
+    width: 180,
+    height: 180,
     correctLevel: QRCode.CorrectLevel.H
   });
 
@@ -387,8 +387,8 @@ function generateQR() {
   let savedLogo = localStorage.getItem("companyLogo");
 
   logoImg.style.position = "absolute";
-  logoImg.style.width = "60px";
-  logoImg.style.height = "60px";
+  logoImg.style.width = "40px";
+  logoImg.style.height = "40px";
   logoImg.style.backgroundColor = "white";
   logoImg.style.padding = "4px";
   logoImg.style.borderRadius = "4px";
