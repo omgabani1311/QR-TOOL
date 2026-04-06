@@ -3,21 +3,22 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description"
     content="Generate UPI QR code with invoice instantly. Free online QR generator for payments. Fast, easy and secure.">
   <title>UPI QR Invoice Generator</title>
 
   <link rel="stylesheet" href="qr.css">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://unpkg.com/@zxing/library@latest"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://unpkg.com/@zxing/library@latest"></script>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/12.11.0/firebase-database-compat.js"></script>
 
   <style>
     .container {
@@ -129,7 +130,7 @@
 
       <label>Name</label>
       <input id="reg-fullname" placeholder="Your Name" autocomplete="off">
-      <span class="error" id  ="reg-fullname-error"></span>
+      <span class="error" id="reg-fullname-error"></span>
 
       <label>Phone No.</label>
       <input id="reg-contact" placeholder=" Phone Number" autocomplete="off">
@@ -209,9 +210,9 @@
           <label>Product</label>
           <input class="product" placeholder="Product Name">
           <label>Quantity</label>
-          <input class="qty" placeholder="Qty">
+          <input class="qty" placeholder="Qty" oninput="calculatePending()">
           <label>Price</label>
-          <input class="price" placeholder="Price">
+          <input class="price" placeholder="Price" oninput="calculatePending()">
           <button type="button" onclick="removeProductRow(this)">Remove</button>
         </div>
       </div>
@@ -243,12 +244,13 @@
 
     </div>
 
-    <div class="result" id="result">
+    <div class="result" id="result" style="width: 100%;">
 
-      <div id="card"
-        style="position: relative; overflow: hidden; background: #fdfbf7; padding: 30px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: row; gap: 30px; color: #222;">
-        <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png"
-          crossorigin="anonymous" class="watermark-logo" style="opacity: 0.015; max-width: 40%;">
+      <div style="width: 100%; overflow-x: auto; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div id="card"
+          style="position: relative; overflow: hidden; background: #fdfbf7; padding: 30px; display: flex; flex-direction: row; gap: 30px; color: #222; min-width: 750px;">
+          <img src="https://res.cloudinary.com/dzgc4sghz/image/upload/v1774072486/A_ICON_origional_png_vmd8lv.png"
+            crossorigin="anonymous" class="watermark-logo" style="opacity: 0.015; max-width: 40%;">
 
         <!-- Left Column -->
         <div style="flex: 1; display: flex; flex-direction: column;">
@@ -350,6 +352,7 @@
           </div>
         </div>
       </div>
+      </div>
 
       <div class="actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
         <div style="display: flex; gap: 10px; justify-content: center; width: 100%;">
@@ -385,7 +388,7 @@
 
   </div>
 
-  <script src="upi.js"></script>
+  <script defer src="upi.js"></script>
 
 </body>
 
