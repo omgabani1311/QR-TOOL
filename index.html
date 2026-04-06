@@ -33,19 +33,20 @@
       width: 100%;
     }
 
+    #card .invoice-table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
     #card .invoice-table th,
     #card .invoice-table td {
-      border: none !important;
-      padding: 10px 0 !important;
+      border: 1px solid #e0e0e0 !important;
+      padding: 10px !important;
       background: transparent !important;
     }
 
     #card .invoice-table th {
-      border-bottom: 1px solid #ddd !important;
-    }
-
-    #card .invoice-table td {
-      border-bottom: 1px solid #f0f0f0 !important;
+      background: #fdfbf7 !important;
     }
 
     #card .invoice-table td:first-child,
@@ -133,7 +134,7 @@
       <span class="error" id="reg-fullname-error"></span>
 
       <label>Phone No.</label>
-      <input id="reg-contact" placeholder=" Phone Number" autocomplete="off">
+      <input type="tel" inputmode="tel" id="reg-contact" placeholder=" Phone Number" autocomplete="off">
       <span class="error" id="reg-contact-error"></span>
 
       <label>Company Logo (Optional)</label>
@@ -202,7 +203,7 @@
       <span class="error" id="client-error"></span>
 
       <label>Client Phone</label>
-      <input id="client-phone" placeholder="e.g., 1234567890">
+      <input type="tel" inputmode="tel" id="client-phone" placeholder="e.g., 1234567890">
       <span class="error" id="client-phone-error"></span>
 
       <div id="products-section">
@@ -210,9 +211,9 @@
           <label>Product</label>
           <input class="product" placeholder="Product Name">
           <label>Quantity</label>
-          <input class="qty" placeholder="Qty" oninput="calculatePending()">
+          <input type="number" inputmode="numeric" pattern="[0-9]*" class="qty" placeholder="Qty" oninput="calculatePending()">
           <label>Price</label>
-          <input class="price" placeholder="Price" oninput="calculatePending()">
+          <input type="number" inputmode="decimal" class="price" placeholder="Price" oninput="calculatePending()">
           <button type="button" onclick="removeProductRow(this)">Remove</button>
         </div>
       </div>
@@ -231,7 +232,7 @@
 
         <div id="advance-fields" style="display: none;">
           <label>Advance Amount</label>
-          <input type="number" id="advance-amount" placeholder="Enter Advance Amount" oninput="calculatePending()"
+          <input type="number" inputmode="decimal" id="advance-amount" placeholder="Enter Advance Amount" oninput="calculatePending()"
             style="margin-bottom: 10px;">
           <span class="error" id="advance-error"></span>
 
