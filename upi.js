@@ -66,7 +66,7 @@ function showMainForm(user) {
   } else {
     displayLogo.style.display = "none";
   }
-  
+
   document.getElementById("name").value = localStorage.getItem("payeeName") || "";
   document.getElementById("upi").value = localStorage.getItem("upiId") || "";
 
@@ -206,7 +206,7 @@ function newEntry() {
         <label>Product</label>
         <input class="product" placeholder="Product Name">
         <label>Quantity</label>
-        <input class="qty" placeholder="Qty">
+        <input class="qty" placeholder="Qty" oninput="calculatePending()">
         <label>Price</label>
         <input class="price" placeholder="Price" oninput="calculatePending()">
         <button type="button" onclick="removeProductRow(this)">Remove</button>
@@ -268,7 +268,7 @@ function addProductRow() {
       <label>Product</label>
       <input class="product" placeholder="Product Name">
       <label>Quantity</label>
-      <input class="qty" placeholder="Qty">
+      <input class="qty" placeholder="Qty" oninput="calculatePending()">
       <label>Price</label>
       <input class="price" placeholder="Price" oninput="calculatePending()">
       <button type="button" onclick="removeProductRow(this)">Remove</button>
@@ -405,6 +405,8 @@ function generateQR() {
   }
 
   if (hasError) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showFormError("Please fix the highlighted errors before generating.");
     return;
   }
 
